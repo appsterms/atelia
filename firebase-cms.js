@@ -68,11 +68,12 @@ async function loadHeroSection() {
 // Load Projects Section
 async function loadProjectsSection() {
     try {
-        // Load section header
+        console.log('Loading projects section...');
+        
+        // Load section header first
         const projectsDoc = await getDoc(doc(db, 'content', 'projects'));
         if (projectsDoc.exists()) {
             const data = projectsDoc.data();
-            
             const title = document.querySelector('.projects-title');
             const description = document.querySelector('.projects-description p');
             const cta = document.querySelector('.view-projects-link');
@@ -82,45 +83,89 @@ async function loadProjectsSection() {
             if (cta && data.cta) cta.textContent = data.cta;
         }
 
-        // Load project items (limited to 4 for homepage)
+        // Load project items
         const projectsSnapshot = await getDocs(collection(db, 'projects'));
         const projectsGrid = document.getElementById('homeProjectsGrid');
         
-        console.log('Projects snapshot:', projectsSnapshot);
-        console.log('Projects snapshot empty:', projectsSnapshot.empty);
-        console.log('Projects grid element:', projectsGrid);
+        console.log('Projects found:', projectsSnapshot.size);
         
-        if (projectsGrid && !projectsSnapshot.empty) {
-            console.log('Clearing projects grid and loading CMS data');
-            projectsGrid.innerHTML = ''; // Clear existing/loading content
+        if (projectsGrid) {
+            // Always clear and rebuild
+            projectsGrid.innerHTML = '';
             
-            // Limit to 4 projects on homepage to avoid overload
-            let count = 0;
-            const maxProjects = 4;
-            
-            projectsSnapshot.forEach(doc => {
-                console.log('Processing project doc:', doc.id, doc.data());
-                if (count < maxProjects) {
-                    const project = doc.data();
-                    console.log('Creating project item for:', project.name);
-                    const projectItem = document.createElement('div');
-                    projectItem.className = 'project-item stagger-item architectural-hover';
-                    projectItem.innerHTML = `
+            if (projectsSnapshot.size > 0) {
+                console.log('Loading projects from Firebase...');
+                let count = 0;
+                projectsSnapshot.forEach(doc => {
+                    if (count < 4) { // Limit to 4 for homepage
+                        const project = doc.data();
+                        const projectItem = document.createElement('div');
+                        projectItem.className = 'project-item stagger-item architectural-hover';
+                        projectItem.innerHTML = `
+                            <div class="project-image">
+                                <img src="${project.image || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80'}" alt="${project.alt || project.name || 'Project'}">
+                            </div>
+                            <h3 class="project-caption">${project.name || 'Project'}</h3>
+                        `;
+                        projectsGrid.appendChild(projectItem);
+                        count++;
+                    }
+                });
+                console.log('Loaded', count, 'projects from Firebase');
+            } else {
+                console.log('No projects in Firebase, loading default content...');
+                // Load default content
+                projectsGrid.innerHTML = `
+                    <div class="project-item stagger-item architectural-hover">
                         <div class="project-image">
-                            <img src="${project.image || ''}" alt="${project.alt || project.name}">
+                            <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Eltham 139 - Modern living space with vaulted ceiling">
                         </div>
-                        <h3 class="project-caption">${project.name || ''}</h3>
-                    `;
-                    projectsGrid.appendChild(projectItem);
-                    count++;
-                    console.log('Added project item, count now:', count);
-                }
-            });
-        } else {
-            console.log('Keeping default projects content - no CMS data or grid not found');
+                        <h3 class="project-caption">Preston</h3>
+                    </div>
+                    <div class="project-item stagger-item architectural-hover">
+                        <div class="project-image">
+                            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Southbank - Modern kitchen with dark cabinetry">
+                        </div>
+                        <h3 class="project-caption">Southbank</h3>
+                    </div>
+                    <div class="project-item stagger-item architectural-hover">
+                        <div class="project-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Hawthorn - Charming white house exterior">
+                        </div>
+                        <h3 class="project-caption">Hawthorn</h3>
+                    </div>
+                `;
+                console.log('Loaded default projects content');
+            }
         }
+        
+        console.log('Projects section loaded successfully');
     } catch (error) {
         console.error('Error loading projects section:', error);
+        // Fallback: ensure default content is shown
+        const projectsGrid = document.getElementById('homeProjectsGrid');
+        if (projectsGrid && projectsGrid.innerHTML === '') {
+            projectsGrid.innerHTML = `
+                <div class="project-item stagger-item architectural-hover">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Eltham 139 - Modern living space with vaulted ceiling">
+                    </div>
+                    <h3 class="project-caption">Preston</h3>
+                </div>
+                <div class="project-item stagger-item architectural-hover">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Southbank - Modern kitchen with dark cabinetry">
+                    </div>
+                    <h3 class="project-caption">Southbank</h3>
+                </div>
+                <div class="project-item stagger-item architectural-hover">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Hawthorn - Charming white house exterior">
+                    </div>
+                    <h3 class="project-caption">Hawthorn</h3>
+                </div>
+            `;
+        }
     }
 }
 
@@ -190,11 +235,12 @@ async function loadAboutSection() {
 // Load Services Section
 async function loadServicesSection() {
     try {
-        // Load section header
+        console.log('Loading services section...');
+        
+        // Load section header first
         const servicesDoc = await getDoc(doc(db, 'content', 'services'));
         if (servicesDoc.exists()) {
             const data = servicesDoc.data();
-            
             const title = document.querySelector('.services-title');
             const tagline = document.querySelector('.services-tagline');
             const cta = document.querySelector('.explore-services-btn');
@@ -204,46 +250,96 @@ async function loadServicesSection() {
             if (cta && data.cta) cta.textContent = data.cta;
         }
 
-        // Load service items (limited to 3 for homepage)
+        // Load service items
         const servicesSnapshot = await getDocs(collection(db, 'services'));
         const servicesGrid = document.getElementById('homeServicesGrid');
         
-        console.log('Services snapshot:', servicesSnapshot);
-        console.log('Services snapshot empty:', servicesSnapshot.empty);
-        console.log('Services grid element:', servicesGrid);
+        console.log('Services found:', servicesSnapshot.size);
         
-        if (servicesGrid && !servicesSnapshot.empty) {
-            console.log('Clearing services grid and loading CMS data');
-            servicesGrid.innerHTML = ''; // Clear existing/loading content
+        if (servicesGrid) {
+            // Always clear and rebuild
+            servicesGrid.innerHTML = '';
             
-            // Limit to 3 services on homepage to avoid overload
-            let count = 0;
-            const maxServices = 3;
-            
-            servicesSnapshot.forEach(doc => {
-                console.log('Processing service doc:', doc.id, doc.data());
-                if (count < maxServices) {
-                    const service = doc.data();
-                    console.log('Creating service item for:', service.name);
-                    const serviceCard = document.createElement('div');
-                    serviceCard.className = 'service-card stagger-item architectural-hover';
-                    serviceCard.innerHTML = `
+            if (servicesSnapshot.size > 0) {
+                console.log('Loading services from Firebase...');
+                let count = 0;
+                servicesSnapshot.forEach(doc => {
+                    if (count < 3) { // Limit to 3 for homepage
+                        const service = doc.data();
+                        const serviceCard = document.createElement('div');
+                        serviceCard.className = 'service-card stagger-item architectural-hover';
+                        serviceCard.innerHTML = `
+                            <div class="service-image">
+                                <img src="${service.image || 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80'}" alt="${service.alt || service.name || 'Service'}">
+                            </div>
+                            <h3 class="service-name">${service.name || 'Service'}</h3>
+                            <a href="#${service.name ? service.name.toLowerCase().replace(/\s+/g, '-') : 'service'}" class="service-link">Learn more →</a>
+                        `;
+                        servicesGrid.appendChild(serviceCard);
+                        count++;
+                    }
+                });
+                console.log('Loaded', count, 'services from Firebase');
+            } else {
+                console.log('No services in Firebase, loading default content...');
+                // Load default content
+                servicesGrid.innerHTML = `
+                    <div class="service-card stagger-item architectural-hover">
                         <div class="service-image">
-                            <img src="${service.image || ''}" alt="${service.alt || service.name}">
+                            <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Site preparation - Construction site">
                         </div>
-                        <h3 class="service-name">${service.name || ''}</h3>
-                        <a href="#${service.name ? service.name.toLowerCase().replace(/\s+/g, '-') : ''}" class="service-link">Learn more →</a>
-                    `;
-                    servicesGrid.appendChild(serviceCard);
-                    count++;
-                    console.log('Added service item, count now:', count);
-                }
-            });
-        } else {
-            console.log('Keeping default services content - no CMS data or grid not found');
+                        <h3 class="service-name">Site preparation</h3>
+                        <a href="#site-preparation" class="service-link">Learn more →</a>
+                    </div>
+                    <div class="service-card stagger-item architectural-hover">
+                        <div class="service-image">
+                            <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Final finishes - Interior finishing">
+                        </div>
+                        <h3 class="service-name">Final finishes</h3>
+                        <a href="#final-finishes" class="service-link">Learn more →</a>
+                    </div>
+                    <div class="service-card stagger-item architectural-hover">
+                        <div class="service-image">
+                            <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Custom Renovation - Luxury renovation">
+                        </div>
+                        <h3 class="service-name">Custom Renovation</h3>
+                        <a href="#custom-renovation" class="service-link">Learn more →</a>
+                    </div>
+                `;
+                console.log('Loaded default services content');
+            }
         }
+        
+        console.log('Services section loaded successfully');
     } catch (error) {
         console.error('Error loading services section:', error);
+        // Fallback: ensure default content is shown
+        const servicesGrid = document.getElementById('homeServicesGrid');
+        if (servicesGrid && servicesGrid.innerHTML === '') {
+            servicesGrid.innerHTML = `
+                <div class="service-card stagger-item architectural-hover">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Site preparation - Construction site">
+                    </div>
+                    <h3 class="service-name">Site preparation</h3>
+                    <a href="#site-preparation" class="service-link">Learn more →</a>
+                </div>
+                <div class="service-card stagger-item architectural-hover">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Final finishes - Interior finishing">
+                    </div>
+                    <h3 class="service-name">Final finishes</h3>
+                    <a href="#final-finishes" class="service-link">Learn more →</a>
+                </div>
+                <div class="service-card stagger-item architectural-hover">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Custom Renovation - Luxury renovation">
+                    </div>
+                    <h3 class="service-name">Custom Renovation</h3>
+                    <a href="#custom-renovation" class="service-link">Learn more →</a>
+                </div>
+            `;
+        }
     }
 }
 
