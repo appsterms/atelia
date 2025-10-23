@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelia Built - CMS Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e4e1d5;
+        }
+
+        .login-form {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Admin Layout */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #2A2A2A;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: #4CAF50;
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logout-btn-sidebar {
+            width: 100%;
+            background: #dc3545;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .logout-btn-sidebar:hover {
+            background: #c82333;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - 260px);
+        }
+
+        .top-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #3A3A3A;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .section h3 {
+            margin-bottom: 25px;
+            color: #2A2A2A;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2A2A2A;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        input[readonly] {
+            background: #f5f5f5;
+        }
+
+        .btn {
+            background: #3A3A3A;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2A2A2A;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #4CAF50;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .status {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 150px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+
+        .item-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            border-left: 3px solid #3A3A3A;
+        }
+
+        .item-card h4 {
+            margin-bottom: 15px;
+            color: #2A2A2A;
+        }
+
+        .btn-group {
+            margin-top: 15px;
+        }
+
+        .badge {
+            background: #dc3545;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .booking-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .booking-card.unread {
+            border-color: #4CAF50;
+            background: #f9fff9;
+        }
+
+        .booking-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .booking-info h4 {
+            margin: 0 0 5px 0;
+            color: #2A2A2A;
+            font-size: 18px;
+        }
+
+        .booking-meta {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .booking-status-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .booking-status-badge.new {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .booking-status-badge.contacted {
+            background: #2196F3;
+            color: white;
+        }
+
+        .booking-status-badge.completed {
+            background: #9E9E9E;
+            color: white;
+        }
+
+        .booking-details {
+            margin: 15px 0;
+        }
+
+        .booking-detail-row {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .booking-detail-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .booking-detail-value {
+            color: #2A2A2A;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        /* Developer Info Styles */
+        .info-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-card.warning {
+            background: #fff8f0;
+            border-color: #ff9800;
+        }
+
+        .info-card.success {
+            background: #f0f9f4;
+            border-color: #4CAF50;
+        }
+
+        .info-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .info-card h4 {
+            margin: 0 0 15px 0;
+            color: #2A2A2A;
+            font-size: 16px;
+        }
+
+        .code-block {
+            background: #2A2A2A;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .btn-small {
+            background: #3A3A3A;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-small:hover {
+            background: #4CAF50;
+        }
+
+        .url-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .url-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .url-label {
+            font-weight: 600;
+            min-width: 100px;
+            color: #666;
+        }
+
+        .url-item a {
+            color: #2196F3;
+            text-decoration: none;
+        }
+
+        .url-item a:hover {
+            text-decoration: underline;
+        }
+
+        .collections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .collection-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .collection-item strong {
+            color: #2A2A2A;
+            font-size: 14px;
+        }
+
+        .collection-desc {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .notes-list {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .notes-list li {
+            margin-bottom: 10px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-link {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .quick-link:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .quick-link strong {
+            color: #2196F3;
+            font-size: 14px;
+        }
+
+        .quick-link span {
+            color: #666;
+            font-size: 12px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.green {
+            background: #4CAF50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        .status-dot.red {
+            background: #dc3545;
+            box-shadow: 0 0 8px rgba(220, 53, 69, 0.6);
+        }
+
+        .preview-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 20px;
+        }
+
+        .preview-btn:hover {
+            background: #45a049;
+            transform: translateY(-1px);
+        }
+
+        .preview-card {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+
+        .preview-card h4 {
+            margin: 0 0 10px 0;
+            color: #0369a1;
+            font-size: 14px;
+        }
+
+        .content-preview {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .content-preview p {
+            margin: 5px 0;
+            color: #334155;
+        }
+
+        .content-preview strong {
+            color: #0c4a6e;
+        }
+
+        .content-preview span {
+            color: #1e293b;
+        }
+
+        .settings-group {
+            background: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+
+        .settings-group h4 {
+            margin: 0 0 20px 0;
+            color: #2A2A2A;
+            font-size: 16px;
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-footer {
+                position: relative;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-form">
+            <h2 style="text-align: center; margin-bottom: 30px;">Atelia Built CMS</h2>
+            <div id="loginStatus" class="status hidden"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn" style="width: 100%; margin: 0;">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-layout hidden">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">Atelia Built</div>
+                <div class="sidebar-subtitle">Content Management</div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-section="hero">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span>Hero Section</span>
+                </div>
+                <div class="menu-item" data-section="projects">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <span>Projects</span>
+                </div>
+                <div class="menu-item" data-section="about">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>About</span>
+                </div>
+                <div class="menu-item" data-section="services">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span>Services</span>
+                </div>
+                <div class="menu-item" data-section="news">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                    <span>News</span>
+                </div>
+                <div class="menu-item" data-section="cta">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+                    <span>CTA Section</span>
+                </div>
+                <div class="menu-item" data-section="bookings">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    <span>Bookings</span>
+                    <span id="bookingsCount" class="badge"></span>
+                </div>
+                <div class="menu-item" data-section="settings">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>Site Settings</span>
+                </div>
+                <div class="menu-item" data-section="dev-info">
+                    <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                    <span>Developer Info</span>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="logout-btn-sidebar">Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-bar">
+                <h1 style="font-size: 24px; color: #2A2A2A;">Dashboard</h1>
+                <div class="user-info">
+                    <a href="/" target="_blank" class="preview-btn" title="View Live Site">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        <span>Preview Site</span>
+                    </a>
+                    <div class="user-avatar">A</div>
+                    <span id="userEmail" style="font-size: 14px; color: #666;">admin@ateliabuilt.com</span>
+                </div>
+            </div>
+
+            <div id="statusMessage" class="status hidden"></div>
+
+            <!-- Hero Section -->
+            <div id="hero-section" class="content-section active">
+                <div class="section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0;">Hero Section</h3>
+                        <a href="/#hero" target="_blank" class="btn-small">View on Site</a>
+                    </div>
+                    
+                    <div class="preview-card">
+                        <h4>Current Preview</h4>
+                        <div id="heroPreview" class="content-preview">
+                            <p><strong>Headline:</strong> <span id="currentHeroHeadline">Loading...</span></p>
+                            <p><strong>Button:</strong> <span id="currentHeroButton">Loading...</span></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="heroHeadline">Headline:</label>
+                        <textarea id="heroHeadline"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="heroButtonText">Button Text:</label>
+                        <input type="text" id="heroButtonText">
+                    </div>
+                    <button onclick="saveHero()" class="btn btn-success">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- Projects Section -->
+            <div id="projects-section" class="content-section">
+                <div class="section">
+                    <h3>Projects Section Header</h3>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="projectsTitle">Title:</label>
+                            <input type="text" id="projectsTitle">
+                        </div>
+                        <div class="form-group">
+                            <label for="projectsDescription">Description:</label>
+                            <textarea id="projectsDescription"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectsCTA">CTA Text:</label>
+                            <input type="text" id="projectsCTA">
+                        </div>
+                    </div>
+                    <button onclick="saveProjects()" class="btn btn-success">Save Header</button>
+                </div>
+
+                <div class="section">
+                    <h3>Project Items</h3>
+                    <div id="projectsList"></div>
+                    <button onclick="addProject()" class="btn">Add New Project</button>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div id="about-section" class="content-section">
+                <div class="section">
+                    <h3>About Section</h3>
+                    <div class="form-group">
+                        <label for="aboutTitle">Title:</label>
+                        <input type="text" id="aboutTitle">
+                    </div>
+                    <div class="form-group">
+                        <label for="aboutDescription1">Description 1:</label>
+                        <textarea id="aboutDescription1"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="aboutDescription2">Description 2:</label>
+                        <textarea id="aboutDescription2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="aboutCTA">CTA Text:</label>
+                        <input type="text" id="aboutCTA">
+                    </div>
+                    <button onclick="saveAbout()" class="btn btn-success">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- Services Section -->
+            <div id="services-section" class="content-section">
+                <div class="section">
+                    <h3>Services Section Header</h3>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="servicesTitle">Title:</label>
+                            <input type="text" id="servicesTitle">
+                        </div>
+                        <div class="form-group">
+                            <label for="servicesTagline">Tagline:</label>
+                            <input type="text" id="servicesTagline">
+                        </div>
+                        <div class="form-group">
+                            <label for="servicesCTA">CTA Text:</label>
+                            <input type="text" id="servicesCTA">
+                        </div>
+                    </div>
+                    <button onclick="saveServices()" class="btn btn-success">Save Header</button>
+                </div>
+
+                <div class="section">
+                    <h3>Service Items</h3>
+                    <div id="servicesList"></div>
+                    <button onclick="addService()" class="btn">Add New Service</button>
+                </div>
+            </div>
+
+            <!-- News Section -->
+            <div id="news-section" class="content-section">
+                <div class="section">
+                    <h3>News Section Header</h3>
+                    <div class="grid">
+                        <div class="form-group">
+                            <label for="newsTitle">Title:</label>
+                            <input type="text" id="newsTitle">
+                        </div>
+                        <div class="form-group">
+                            <label for="newsTagline">Tagline:</label>
+                            <textarea id="newsTagline"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="newsCTA">CTA Text:</label>
+                            <input type="text" id="newsCTA">
+                        </div>
+                    </div>
+                    <button onclick="saveNews()" class="btn btn-success">Save Header</button>
+                </div>
+
+                <div class="section">
+                    <h3>News Items</h3>
+                    <div id="newsList"></div>
+                    <button onclick="addNews()" class="btn">Add News Item</button>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div id="cta-section" class="content-section">
+                <div class="section">
+                    <h3>Final CTA Section</h3>
+                    <div class="form-group">
+                        <label for="ctaHeadline">Headline:</label>
+                        <textarea id="ctaHeadline"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="ctaDescription">Description:</label>
+                        <textarea id="ctaDescription"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="ctaButtonText">Button Text:</label>
+                        <input type="text" id="ctaButtonText">
+                    </div>
+                    <button onclick="saveCTA()" class="btn btn-success">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- Bookings Section -->
+            <div id="bookings-section" class="content-section">
+                <div class="section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h3 style="margin: 0;">Service Bookings</h3>
+                        <button onclick="refreshBookings()" class="btn">Refresh</button>
+                    </div>
+                    <div id="bookingsList">
+                        <p style="text-align: center; color: #999;">Loading bookings...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Site Settings Section -->
+            <div id="settings-section" class="content-section">
+                <div class="section">
+                    <h3>⚙️ Site Settings</h3>
+                    <p style="color: #666; margin-bottom: 30px;">Configure global site settings, SEO, and branding.</p>
+
+                    <!-- Site Identity -->
+                    <div class="settings-group">
+                        <h4>🏢 Site Identity</h4>
+                        <div class="form-group">
+                            <label for="siteName">Site Name:</label>
+                            <input type="text" id="siteName" placeholder="Atelia Built">
+                            <small>Displayed in header, footer, and browser tabs</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="siteTagline">Site Tagline:</label>
+                            <input type="text" id="siteTagline" placeholder="Exceptional Home Construction">
+                            <small>Short description of your business</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="siteFavicon">Favicon URL:</label>
+                            <input type="url" id="siteFavicon" placeholder="https://example.com/favicon.ico">
+                            <small>Small icon shown in browser tabs (Upload to Cloudinary or use external URL)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="siteLogo">Logo URL:</label>
+                            <input type="url" id="siteLogo" placeholder="https://example.com/logo.png">
+                            <small>Main logo image (Optional - leave blank to use site name text)</small>
+                        </div>
+                    </div>
+
+                    <!-- SEO Settings -->
+                    <div class="settings-group">
+                        <h4>🔍 SEO Settings</h4>
+                        <div class="form-group">
+                            <label for="seoTitle">Page Title:</label>
+                            <input type="text" id="seoTitle" placeholder="Atelia Built - Exceptional Home Construction">
+                            <small>Shows in browser tabs and search results (50-60 characters recommended)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="seoDescription">Meta Description:</label>
+                            <textarea id="seoDescription" rows="3" placeholder="Luxury home builder dedicated to translating exceptional design into exceptional construction. Custom homes, renovations, and more."></textarea>
+                            <small>Shows in search results (150-160 characters recommended)</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="seoKeywords">Meta Keywords:</label>
+                            <input type="text" id="seoKeywords" placeholder="home builder, custom homes, luxury construction, home renovation">
+                            <small>Comma-separated keywords (optional, less important for modern SEO)</small>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="settings-group">
+                        <h4>📞 Contact Information</h4>
+                        <div class="grid">
+                            <div class="form-group">
+                                <label for="contactPhone">Phone Number:</label>
+                                <input type="tel" id="contactPhone" placeholder="0483 930 343">
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">Email Address:</label>
+                                <input type="email" id="contactEmail" placeholder="info@ateliabuilt.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactAddress">Business Address:</label>
+                            <textarea id="contactAddress" rows="3" placeholder="1411 Chili Ave, Rochester North Dakota, United States"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Social Media Links -->
+                    <div class="settings-group">
+                        <h4>📱 Social Media Links</h4>
+                        <div class="grid">
+                            <div class="form-group">
+                                <label for="socialInstagram">Instagram URL:</label>
+                                <input type="url" id="socialInstagram" placeholder="https://instagram.com/ateliabuilt">
+                            </div>
+                            <div class="form-group">
+                                <label for="socialLinkedIn">LinkedIn URL:</label>
+                                <input type="url" id="socialLinkedIn" placeholder="https://linkedin.com/company/ateliabuilt">
+                            </div>
+                            <div class="form-group">
+                                <label for="socialFacebook">Facebook URL:</label>
+                                <input type="url" id="socialFacebook" placeholder="https://facebook.com/ateliabuilt">
+                            </div>
+                            <div class="form-group">
+                                <label for="socialTwitter">Twitter URL:</label>
+                                <input type="url" id="socialTwitter" placeholder="https://twitter.com/ateliabuilt">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Working Hours -->
+                    <div class="settings-group">
+                        <h4>🕐 Working Hours</h4>
+                        <div class="grid">
+                            <div class="form-group">
+                                <label for="hoursWeekday">Weekday Hours:</label>
+                                <input type="text" id="hoursWeekday" placeholder="Monday - Friday: 09.00 - 23.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="hoursWeekend">Weekend Hours:</label>
+                                <input type="text" id="hoursWeekend" placeholder="Sunday: 09.00 - 16.00">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="saveSettings()" class="btn btn-success">Save All Settings</button>
+                </div>
+            </div>
+
+            <!-- Developer Info Section -->
+            <div id="dev-info-section" class="content-section">
+                <div class="section">
+                    <h3>🔧 Developer Information & Configuration</h3>
+                    <p style="color: #666; margin-bottom: 30px;">All the configuration details and documentation you need to run this project.</p>
+
+                    <!-- Firebase Configuration -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <h4>🔥 Firebase Configuration</h4>
+                            <button onclick="copyToClipboard('firebase-config')" class="btn-small">Copy</button>
+                        </div>
+                        <pre id="firebase-config" class="code-block">{
+  "apiKey": "AIzaSyDl_lGXfhPrgB5MtFAfOwkDp1ralQw6Flc",
+  "authDomain": "atelia-a0e81.firebaseapp.com",
+  "projectId": "atelia-a0e81",
+  "storageBucket": "atelia-a0e81.firebasestorage.app",
+  "messagingSenderId": "364749141331",
+  "appId": "1:364749141331:web:547dcb0e8592413cd01da6",
+  "measurementId": "G-086T2JDMSC"
+}</pre>
+                    </div>
+
+                    <!-- Cloudinary Configuration -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <h4>☁️ Cloudinary Configuration</h4>
+                            <button onclick="copyToClipboard('cloudinary-config')" class="btn-small">Copy</button>
+                        </div>
+                        <pre id="cloudinary-config" class="code-block">{
+  "cloudName": "dhfg3suis",
+  "apiKey": "321487164178956",
+  "apiSecret": "qD6PpaNK4TPjf1RIhxQQrhNX7Bo",
+  "uploadPreset": "atelia_uploads"
+}</pre>
+                    </div>
+
+                    <!-- Admin Credentials -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <h4>🔐 Admin Credentials</h4>
+                            <button onclick="copyToClipboard('admin-creds')" class="btn-small">Copy</button>
+                        </div>
+                        <pre id="admin-creds" class="code-block">Email: admin@ateliabuilt.com
+Password: admin123456
+
+⚠️ IMPORTANT: Change this password in production!
+Go to Firebase Console → Authentication → Users → Reset Password</pre>
+                    </div>
+
+                    <!-- Project URLs -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <h4>🌐 Project URLs</h4>
+                        </div>
+                        <div class="url-list">
+                            <div class="url-item">
+                                <span class="url-label">Website:</span>
+                                <a href="https://atelia-a0e81.web.app" target="_blank">https://atelia-a0e81.web.app</a>
+                            </div>
+                            <div class="url-item">
+                                <span class="url-label">Admin Panel:</span>
+                                <a href="https://atelia-a0e81.web.app/admin" target="_blank">https://atelia-a0e81.web.app/admin</a>
+                            </div>
+                            <div class="url-item">
+                                <span class="url-label">Login Page:</span>
+                                <a href="https://atelia-a0e81.web.app/login" target="_blank">https://atelia-a0e81.web.app/login</a>
+                            </div>
+                            <div class="url-item">
+                                <span class="url-label">Firebase Console:</span>
+                                <a href="https://console.firebase.google.com/project/atelia-a0e81" target="_blank">Firebase Console</a>
+                            </div>
+                            <div class="url-item">
+                                <span class="url-label">Cloudinary Console:</span>
+                                <a href="https://console.cloudinary.com" target="_blank">Cloudinary Console</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Structure -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <h4>📁 Project File Structure</h4>
+                            <button onclick="copyToClipboard('file-structure')" class="btn-small">Copy</button>
+                        </div>
+                        <pre id="file-structure" class="code-block">atelia/
+├── index.html              # Main landing page
+├── login.html              # Admin login page
+├── admin.html              # Admin panel
+├── styles.css              # All styles
+├── animations.js           # Scroll animations
+├── firebase-cms.js         # Frontend content loader
+├── booking.js              # Booking form handler
+├── admin.js                # Admin panel logic
+├── cloudinary-config.js    # Cloudinary settings
+├── firebase.json           # Firebase hosting config
+├── .firebaserc             # Firebase project config
+├── firestore.rules         # Database security rules
+├── storage.rules           # Storage security rules
+└── [Documentation Files]
+    ├── README.md
+    ├── PRODUCTION_SETUP.md
+    ├── CLOUDINARY_SETUP.md
+    ├── DEPLOYMENT_GUIDE.md
+    └── BOOKING_SYSTEM_GUIDE.md</pre>
+                    </div>
+
+                    <!-- Firebase Collections -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <h4>🗄️ Firestore Collections</h4>
+                        </div>
+                        <div class="collections-grid">
+                            <div class="collection-item">
+                                <strong>content</strong>
+                                <span class="collection-desc">Hero, About, CTA sections</span>
+                            </div>
+                            <div class="collection-item">
+                                <strong>projects</strong>
+                                <span class="collection-desc">Portfolio projects</span>
+                            </div>
+                            <div class="collection-item">
+                                <strong>services</strong>
+                                <span class="collection-desc">Service offerings</span>
+                            </div>
+                            <div class="collection-item">
+                                <strong>news</strong>
+                                <span class="collection-desc">News articles</span>
+                            </div>
+                            <div class="collection-item">
+                                <strong>bookings</strong>
+                                <span class="collection-desc">Service booking requests</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deployment Commands -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <h4>🚀 Deployment Commands</h4>
+                            <button onclick="copyToClipboard('deploy-commands')" class="btn-small">Copy All</button>
+                        </div>
+                        <pre id="deploy-commands" class="code-block"># Install Firebase CLI (if not installed)
+npm install -g firebase-tools
+
+# Login to Firebase
+firebase login
+
+# Initialize (if needed)
+firebase init
+
+# Deploy everything
+firebase deploy
+
+# Deploy only hosting
+firebase deploy --only hosting
+
+# Deploy only Firestore rules
+firebase deploy --only firestore:rules
+
+# Deploy only Storage rules
+firebase deploy --only storage:rules</pre>
+                    </div>
+
+                    <!-- Environment Setup -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <h4>⚙️ Local Development Setup</h4>
+                            <button onclick="copyToClipboard('local-setup')" class="btn-small">Copy</button>
+                        </div>
+                        <pre id="local-setup" class="code-block"># Start local server (Python)
+python -m http.server 8000
+
+# Or use the batch file
+start-server.bat
+
+# Then open browser to:
+http://localhost:8000
+
+# For Firebase emulators (optional)
+firebase emulators:start</pre>
+                    </div>
+
+                    <!-- Important Notes -->
+                    <div class="info-card warning">
+                        <h4>⚠️ Important Security Notes</h4>
+                        <ul class="notes-list">
+                            <li><strong>Change Admin Password:</strong> The default password is public. Change it immediately in Firebase Console.</li>
+                            <li><strong>Cloudinary Upload Preset:</strong> Make sure "atelia_uploads" preset is created in Cloudinary (unsigned).</li>
+                            <li><strong>Firestore Rules:</strong> Already deployed and secured. Only admin@ateliabuilt.com can edit content.</li>
+                            <li><strong>Environment Variables:</strong> All configs are in code files. For production, consider using environment variables.</li>
+                            <li><strong>Backup Data:</strong> Regularly export Firestore data from Firebase Console.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <h4>📚 Documentation Quick Links</h4>
+                        </div>
+                        <div class="quick-links-grid">
+                            <a href="https://firebase.google.com/docs" target="_blank" class="quick-link">
+                                <strong>Firebase Docs</strong>
+                                <span>Official Firebase documentation</span>
+                            </a>
+                            <a href="https://cloudinary.com/documentation" target="_blank" class="quick-link">
+                                <strong>Cloudinary Docs</strong>
+                                <span>Image management guide</span>
+                            </a>
+                            <a href="https://firebase.google.com/docs/firestore/security/get-started" target="_blank" class="quick-link">
+                                <strong>Firestore Rules</strong>
+                                <span>Security rules documentation</span>
+                            </a>
+                            <a href="https://firebase.google.com/docs/hosting" target="_blank" class="quick-link">
+                                <strong>Firebase Hosting</strong>
+                                <span>Deployment guide</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Support -->
+                    <div class="info-card success">
+                        <h4>✅ System Status</h4>
+                        <div class="status-grid">
+                            <div class="status-item">
+                                <span class="status-dot green"></span>
+                                <span>Firebase Connected</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-dot green"></span>
+                                <span>Cloudinary Active</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-dot green"></span>
+                                <span>Admin Panel Working</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-dot green"></span>
+                                <span>Booking System Live</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cloudinary Upload Widget -->
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    <script type="module" src="admin.js"></script>
+    <script>
+        // Handle sidebar navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.dataset.section;
+                    
+                    // Update active menu item
+                    menuItems.forEach(mi => mi.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding content section
+                    contentSections.forEach(cs => cs.classList.remove('active'));
+                    document.getElementById(section + '-section').classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

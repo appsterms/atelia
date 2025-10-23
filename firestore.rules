@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Content collections - read by everyone, write only by authenticated admins
+    match /content/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.email == 'admin@ateliabuilt.com';
+    }
+    
+    // Projects collection - read by everyone, write only by authenticated admins
+    match /projects/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.email == 'admin@ateliabuilt.com';
+    }
+    
+    // Services collection - read by everyone, write only by authenticated admins
+    match /services/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.email == 'admin@ateliabuilt.com';
+    }
+    
+    // News collection - read by everyone, write only by authenticated admins
+    match /news/{document=**} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.email == 'admin@ateliabuilt.com';
+    }
+    
+    // Bookings collection - create by anyone, read/update/delete only by authenticated admins
+    match /bookings/{document=**} {
+      allow create: if true;
+      allow read, update, delete: if request.auth != null && request.auth.token.email == 'admin@ateliabuilt.com';
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atelia Built - Exceptional Home Construction</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>Atelia Built.</h1>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="#about">ABOUT</a></li>
+                    <li><a href="#projects">PROJECTS</a></li>
+                    <li><a href="#services">SERVICES</a></li>
+                    <li><a href="login.html">LOGIN</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="book-here-btn" onclick="openBookingModal()">BOOK HERE</button>
+                <span class="phone-number">0483 930 343</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="hero-section">
+            <div class="hero-content">
+                <h2 class="hero-headline fade-in">Dedicated to translating exceptional design into exceptional construction.</h2>
+                <button class="discovery-call-btn architectural-btn fade-in" onclick="openBookingModal()">BOOK A DISCOVERY CALL</button>
+            </div>
+        </div>
+    </main>
+
+    <section id="projects" class="projects-section">
+        <div class="projects-container">
+            <div class="projects-header">
+                <h2 class="projects-title slide-in-left">Projects.</h2>
+                <div class="projects-description slide-in-right">
+                    <p>A trusted luxury home builder dedicated to turning thoughtful designs into enduring, tangible homes</p>
+                    <a href="#projects" class="view-projects-link">View all our projects →</a>
+                </div>
+            </div>
+            
+            <div class="projects-grid">
+                <div class="project-item stagger-item architectural-hover">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Eltham 139 - Modern living space with vaulted ceiling">
+                    </div>
+                    <h3 class="project-caption">Preston</h3>
+                </div>
+                
+                <div class="project-item stagger-item architectural-hover">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Southbank - Modern kitchen with dark cabinetry">
+                    </div>
+                    <h3 class="project-caption">Southbank</h3>
+                </div>
+                
+                <div class="project-item stagger-item architectural-hover">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Hawthorn - Charming white house exterior">
+                    </div>
+                    <h3 class="project-caption">Hawthorn</h3>
+                </div>
+                
+                <div class="project-item stagger-item architectural-hover">
+                    <div class="project-image">
+                        <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Donvale 82 - Luxury modern bathroom">
+                    </div>
+                    <h3 class="project-caption">Donvale 82</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials" class="testimonials-section">
+        <div class="testimonials-container">
+            <div class="testimonials-content">
+                <div class="testimonials-text slide-in-left">
+                    <h2 class="testimonials-title">Daniel + Wonitta | Construct.</h2>
+                    <p class="testimonials-description">Hear from our wonderful clients, Daniel and Wonitta, as they share their experience working with Atelia on their contemporary renovation of their home at Donvale 82. In this testimonial, Daniel and Wonitta walk us through the journey of transforming their living space to an open-concept design, a luxurious new bathroom, and a stylish outdoor area. They discuss how Atelia brought their vision to life, focusing on both functionality and modern design.</p>
+                    <a href="#testimonials" class="view-testimonials-link">View all our testimonials →</a>
+                </div>
+                
+                <div class="testimonials-video slide-in-right">
+                    <div class="video-container">
+                        <iframe 
+                            src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                            title="Atelia Built | Donvale 82 - Project Testimonial"
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="about-container">
+            <div class="about-content">
+                <div class="about-image slide-in-left">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Atelia Built Team">
+                </div>
+                
+                <div class="about-text slide-in-right">
+                    <h2 class="about-title">About Atelia Built</h2>
+                    <p class="about-description">Atelia Built is a luxury home builder dedicated to translating exceptional design into exceptional construction. With a focus on craftsmanship, collaboration, and clarity, we bring every design vision to life with care and precision.</p>
+                    <p class="about-description">We believe a beautifully designed home deserves to be beautifully built. While we may not create the initial vision, we are the ones who bring it to life. Our work begins where design meets reality — in the details, the materials, the craftsmanship, and the execution. We collaborate closely with homeowners, architects, and designers to ensure that every vision is honored, every plan is realized, and every expectation is exceeded.</p>
+                    <a href="#about" class="learn-more-link">Learn more about us →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services-section">
+        <div class="services-container">
+            <div class="services-header">
+                <h2 class="services-title slide-in-left">Services.</h2>
+                <p class="services-tagline slide-in-right">Creating peace of mind.</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card stagger-item architectural-hover">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Site preparation - Construction site">
+                    </div>
+                    <h3 class="service-name">Site preparation</h3>
+                    <a href="#site-preparation" class="service-link">Learn more →</a>
+                </div>
+                
+                <div class="service-card stagger-item architectural-hover">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Final finishes - Interior finishing">
+                    </div>
+                    <h3 class="service-name">Final finishes</h3>
+                    <a href="#final-finishes" class="service-link">Learn more →</a>
+                </div>
+                
+                <div class="service-card stagger-item architectural-hover">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Custom Renovation - Luxury renovation">
+                    </div>
+                    <h3 class="service-name">Custom Renovation</h3>
+                    <a href="#custom-renovation" class="service-link">Learn more →</a>
+                </div>
+            </div>
+            
+            <div class="services-cta">
+                <button class="explore-services-btn architectural-btn fade-in">Explore all our services</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works-section">
+        <div class="how-it-works-container">
+            <div class="how-it-works-header">
+                <h2 class="how-it-works-title slide-in-left">How it works.</h2>
+                <p class="how-it-works-tagline slide-in-right">We focus on more than just building, we care about you.</p>
+            </div>
+            
+            <div class="process-steps">
+                <div class="process-step stagger-item">
+                    <div class="step-icon">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 20C15 15.5817 18.5817 12 23 12H37C41.4183 12 45 15.5817 45 20V40C45 44.4183 41.4183 48 37 48H23C18.5817 48 15 44.4183 15 40V20Z" stroke="#2A2A2A" stroke-width="2"/>
+                            <path d="M20 20L30 30L40 20" stroke="#2A2A2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="30" cy="35" r="3" fill="#2A2A2A"/>
+                            <circle cx="30" cy="25" r="2" fill="#4A9B3A"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">Discovery Call</h3>
+                    <p class="step-description">Once you've booked a discovery call, you'll speak with our team to discuss your project and explore how we can assist you.</p>
+                </div>
+                
+                <div class="process-step stagger-item">
+                    <div class="step-icon">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="15" y="25" width="30" height="20" rx="2" stroke="#2A2A2A" stroke-width="2"/>
+                            <circle cx="25" cy="35" r="2" fill="#2A2A2A"/>
+                            <circle cx="35" cy="35" r="2" fill="#2A2A2A"/>
+                            <path d="M20 15L25 20L35 20L40 15" stroke="#2A2A2A" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="30" cy="10" r="3" fill="#4A9B3A"/>
+                            <rect x="28" y="5" width="4" height="8" fill="#4A9B3A"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">Concept + Design</h3>
+                    <p class="step-description">We'll visit your site to talk about your goals. Then, we'll collaborate to create the concept and design of your dream home.</p>
+                </div>
+                
+                <div class="process-step stagger-item">
+                    <div class="step-icon">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="15" y="20" width="30" height="25" rx="2" stroke="#2A2A2A" stroke-width="2"/>
+                            <path d="M20 25H40M20 30H40M20 35H40" stroke="#2A2A2A" stroke-width="1"/>
+                            <rect x="25" y="10" width="10" height="8" rx="1" fill="#4A9B3A"/>
+                            <path d="M30 5L35 10H25L30 5Z" fill="#4A9B3A"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">Project Development</h3>
+                    <p class="step-description">Our team will build your dream home. You can stay involved on progress.</p>
+                </div>
+                
+                <div class="process-step stagger-item">
+                    <div class="step-icon">
+                        <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M30 10L40 20V45H20V20L30 10Z" stroke="#2A2A2A" stroke-width="2" stroke-linejoin="round"/>
+                            <rect x="25" y="30" width="10" height="15" stroke="#2A2A2A" stroke-width="2"/>
+                            <rect x="27" y="32" width="6" height="4" fill="#2A2A2A"/>
+                            <path d="M30 5L35 10H25L30 5Z" fill="#4A9B3A"/>
+                        </svg>
+                    </div>
+                    <h3 class="step-title">Enjoy Your Dream Home</h3>
+                    <p class="step-description">Rediscover your love for your newly built dream home and experience the joy of seeing it come to life just as you imagined.</p>
+                </div>
+            </div>
+            
+            <div class="how-it-works-cta">
+                <button class="book-discovery-btn architectural-btn fade-in" onclick="openBookingModal()">Book a Discovery Call</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="news" class="news-section">
+        <div class="news-container">
+            <div class="news-header">
+                <h2 class="news-title slide-in-left">Dream Homes Revealed.</h2>
+                <p class="news-tagline slide-in-right">We're excited to share that Atelia was featured on Channel 9's Dream Homes Revealed – Season 4, Episode 12 "Tranquil Oasis".</p>
+            </div>
+            
+            <div class="news-grid">
+                <article class="news-card stagger-item architectural-hover">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Warrandyte North 54 - Tranquil Oasis">
+                    </div>
+                    <div class="news-content">
+                        <span class="news-date">Channel 9 Feature</span>
+                        <h3 class="news-article-title">Warrandyte North 54 - Tranquil Oasis</h3>
+                        <a href="#dream-homes" class="news-link">Watch the full episode</a>
+                    </div>
+                </article>
+                
+                <article class="news-card stagger-item architectural-hover">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Dream Homes Revealed Season 4">
+                    </div>
+                    <div class="news-content">
+                        <span class="news-date">Season 4, Episode 12</span>
+                        <h3 class="news-article-title">Dream Homes Revealed - Tranquil Oasis</h3>
+                        <a href="#dream-homes" class="news-link">Learn more</a>
+                    </div>
+                </article>
+                
+                <article class="news-card stagger-item architectural-hover">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Atelia Built Directors">
+                    </div>
+                    <div class="news-content">
+                        <span class="news-date">Behind the Scenes</span>
+                        <h3 class="news-article-title">Directors Share Expert Insights</h3>
+                        <a href="#insights" class="news-link">Learn more</a>
+                    </div>
+                </article>
+                
+                <article class="news-card stagger-item architectural-hover">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="Craftsmanship and Detail">
+                    </div>
+                    <div class="news-content">
+                        <span class="news-date">Featured Project</span>
+                        <h3 class="news-article-title">Craftsmanship, Detail, and Creating Spaces</h3>
+                        <a href="#craftsmanship" class="news-link">Learn more</a>
+                    </div>
+                </article>
+            </div>
+            
+            <div class="news-pagination">
+                <div class="pagination-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+            
+            <div class="news-cta">
+                <button class="explore-news-btn architectural-btn fade-in">Watch the full episode</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-headline fade-in">Ready to bring your dream home to life with personalized design and exceptional craftsmanship?</h2>
+            <p class="cta-description fade-in">We've helped clients [like you] to design and build the home you have always imagined.</p>
+            <button class="cta-button architectural-btn fade-in" onclick="openBookingModal()">Book a Discovery Call</button>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeBookingModal()">&times;</span>
+            <h2>Book a Discovery Call</h2>
+            <p style="color: #666; margin-bottom: 30px;">Fill out the form below and we'll get back to you shortly.</p>
+            
+            <form id="bookingForm">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="bookingName">Full Name *</label>
+                        <input type="text" id="bookingName" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="bookingEmail">Email *</label>
+                        <input type="email" id="bookingEmail" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="bookingPhone">Phone Number *</label>
+                        <input type="tel" id="bookingPhone" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="bookingService">Service Interested In *</label>
+                        <select id="bookingService" required>
+                            <option value="">Select a service</option>
+                            <option value="Site preparation">Site preparation</option>
+                            <option value="Final finishes">Final finishes</option>
+                            <option value="Custom Renovation">Custom Renovation</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-field">
+                    <label for="bookingMessage">Project Details *</label>
+                    <textarea id="bookingMessage" rows="5" required placeholder="Tell us about your project..."></textarea>
+                </div>
+                
+                <div id="bookingStatus" class="booking-status"></div>
+                
+                <button type="submit" class="submit-booking-btn">Submit Booking Request</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <!-- Footer Brand -->
+                <div class="footer-brand">
+                    <h3 class="footer-logo">Atelia Built.</h3>
+                    <p class="footer-tagline">Luxury Home builder dedicated to translating exceptional design into exceptional construction.</p>
+                </div>
+
+                <!-- Footer Links -->
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="#testimonials">Testimonials</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#services">Services</a></li>
+                            <li><a href="#contact">Contact</a></li>
+                            <li><a href="#projects">Projects</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Contacts</h4>
+                        <ul>
+                            <li><strong>Address:</strong></li>
+                            <li>1411 Chili Ave,</li>
+                            <li>Rochester North Dakota,</li>
+                            <li>United States</li>
+                            <li><strong>Phone:</strong> (479) 253-6596</li>
+                            <li><strong>Email:</strong> info@ateliabuilt.com</li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Working Hours</h4>
+                        <ul>
+                            <li>Monday - Friday</li>
+                            <li>09.00 - 23.00</li>
+                            <li>&nbsp;</li>
+                            <li>Sunday</li>
+                            <li>09.00 - 16.00</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Social & Copyright -->
+            <div class="footer-bottom">
+                <div class="footer-social">
+                    <a href="#" aria-label="Instagram"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+                    <a href="#" aria-label="LinkedIn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    <a href="#" aria-label="Facebook"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+                    <a href="#" aria-label="Twitter"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+                </div>
+                <p class="footer-copyright">&copy; 2024 Atelia Built. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="animations.js"></script>
+    <script type="module" src="firebase-cms.js"></script>
+    <script type="module" src="booking.js"></script>
+</body>
+</html>

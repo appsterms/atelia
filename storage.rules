@@ -1,0 +1,14 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // NOTE: This project uses Cloudinary for image storage
+    // Firebase Storage is not used, but keeping restrictive rules for security
+    
+    // Deny all access by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
