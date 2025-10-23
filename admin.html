@@ -1371,7 +1371,7 @@
                         <div class="grid">
                             <div class="form-group">
                                 <label for="contactPhone">Phone Number:</label>
-                                <input type="tel" id="contactPhone" placeholder="0483 930 343">
+                                <input type="tel" id="contactPhone" placeholder="+61 483 930 343">
                             </div>
                             <div class="form-group">
                                 <label for="contactEmail">Email Address:</label>
@@ -1476,39 +1476,6 @@ Password: admin123456
 Go to Firebase Console → Authentication → Users → Reset Password</pre>
                     </div>
 
-                    <!-- Project URLs -->
-                    <div class="info-card">
-                        <div class="info-card-header">
-                            <h4>🌐 Project URLs</h4>
-                        </div>
-                        <div class="url-list">
-                            <div class="url-item">
-                                <span class="url-label">Website:</span>
-                                <a href="https://ateliabuilt.com.au" target="_blank">https://ateliabuilt.com.au</a>
-                            </div>
-                            <div class="url-item">
-                                <span class="url-label">Admin Panel:</span>
-                                <a href="https://ateliabuilt.com.au/admin" target="_blank">https://ateliabuilt.com.au/admin</a>
-                            </div>
-                            <div class="url-item">
-                                <span class="url-label">Login Page:</span>
-                                <a href="https://ateliabuilt.com.au/login" target="_blank">https://ateliabuilt.com.au/login</a>
-                            </div>
-                            <div class="url-item">
-                                <span class="url-label">Firebase Hosting:</span>
-                                <a href="https://atelia-a0e81.web.app" target="_blank">https://atelia-a0e81.web.app</a>
-                                <span style="color: #999; font-size: 11px; margin-left: 10px;">(Fallback URL)</span>
-                            </div>
-                            <div class="url-item">
-                                <span class="url-label">Firebase Console:</span>
-                                <a href="https://console.firebase.google.com/project/atelia-a0e81" target="_blank">Firebase Console</a>
-                            </div>
-                            <div class="url-item">
-                                <span class="url-label">Cloudinary Console:</span>
-                                <a href="https://console.cloudinary.com" target="_blank">Cloudinary Console</a>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- File Structure -->
                     <div class="info-card">
@@ -1614,17 +1581,6 @@ http://localhost:8000
 firebase emulators:start</pre>
                     </div>
 
-                    <!-- Important Notes -->
-                    <div class="info-card warning">
-                        <h4>⚠️ Important Security Notes</h4>
-                        <ul class="notes-list">
-                            <li><strong>Change Admin Password:</strong> The default password is public. Change it immediately in Firebase Console.</li>
-                            <li><strong>Cloudinary Upload Preset:</strong> Make sure "atelia_uploads" preset is created in Cloudinary (unsigned).</li>
-                            <li><strong>Firestore Rules:</strong> Already deployed and secured. Only admin@ateliabuilt.com can edit content.</li>
-                            <li><strong>Environment Variables:</strong> All configs are in code files. For production, consider using environment variables.</li>
-                            <li><strong>Backup Data:</strong> Regularly export Firestore data from Firebase Console.</li>
-                        </ul>
-                    </div>
 
                     <!-- Quick Links -->
                     <div class="info-card">

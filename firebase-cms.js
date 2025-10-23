@@ -36,7 +36,8 @@ async function loadAllContent() {
         loadAboutSection(),
         loadServicesSection(),
         loadNewsSection(),
-        loadCTASection()
+        loadCTASection(),
+        loadContactInfo()
     ]);
 }
 
@@ -294,6 +295,37 @@ async function loadCTASection() {
         }
     } catch (error) {
         console.error('Error loading CTA section:', error);
+    }
+}
+
+// Load Contact Information
+async function loadContactInfo() {
+    try {
+        const settingsDoc = await getDoc(doc(db, 'content', 'settings'));
+        if (settingsDoc.exists()) {
+            const data = settingsDoc.data();
+            
+            // Update phone numbers in header
+            const phoneElements = document.querySelectorAll('.phone-number');
+            phoneElements.forEach(element => {
+                if (data.contactPhone) {
+                    element.textContent = data.contactPhone;
+                }
+            });
+            
+            // Update phone numbers in footer
+            const footerPhoneElements = document.querySelectorAll('li strong');
+            footerPhoneElements.forEach(element => {
+                if (element.textContent.includes('Phone:')) {
+                    const phoneLi = element.parentElement;
+                    if (data.contactPhone) {
+                        phoneLi.innerHTML = `<strong>Phone:</strong> ${data.contactPhone}`;
+                    }
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error loading contact info:', error);
     }
 }
 
