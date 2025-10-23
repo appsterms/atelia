@@ -99,8 +99,10 @@ async function loadProjectsSection() {
             const maxProjects = 4;
             
             projectsSnapshot.forEach(doc => {
+                console.log('Processing project doc:', doc.id, doc.data());
                 if (count < maxProjects) {
                     const project = doc.data();
+                    console.log('Creating project item for:', project.name);
                     const projectItem = document.createElement('div');
                     projectItem.className = 'project-item stagger-item architectural-hover';
                     projectItem.innerHTML = `
@@ -111,6 +113,7 @@ async function loadProjectsSection() {
                     `;
                     projectsGrid.appendChild(projectItem);
                     count++;
+                    console.log('Added project item, count now:', count);
                 }
             });
         } else {
@@ -218,8 +221,10 @@ async function loadServicesSection() {
             const maxServices = 3;
             
             servicesSnapshot.forEach(doc => {
+                console.log('Processing service doc:', doc.id, doc.data());
                 if (count < maxServices) {
                     const service = doc.data();
+                    console.log('Creating service item for:', service.name);
                     const serviceCard = document.createElement('div');
                     serviceCard.className = 'service-card stagger-item architectural-hover';
                     serviceCard.innerHTML = `
@@ -231,6 +236,7 @@ async function loadServicesSection() {
                     `;
                     servicesGrid.appendChild(serviceCard);
                     count++;
+                    console.log('Added service item, count now:', count);
                 }
             });
         } else {
