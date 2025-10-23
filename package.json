@@ -5,7 +5,9 @@
   "main": "admin.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "echo 'Static site - no build required'",
+    "vercel-build": "echo 'Static site - no build required'"
   },
   "repository": {
     "type": "git",
