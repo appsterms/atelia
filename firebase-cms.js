@@ -96,14 +96,27 @@ async function loadProjectsSection() {
             if (projectsSnapshot.size > 0) {
                 console.log('Loading projects from Firebase...');
                 let count = 0;
-                projectsSnapshot.forEach(doc => {
+                projectsSnapshot.forEach(docSnapshot => {
                     if (count < 4) { // Limit to 4 for homepage
-                        const project = doc.data();
+                        const project = docSnapshot.data();
+                        const projectId = docSnapshot.id;
                         const projectItem = document.createElement('div');
                         projectItem.className = 'project-item stagger-item architectural-hover';
+                        
+                        // Make project clickable
+                        projectItem.style.cursor = 'pointer';
+                        projectItem.onclick = () => {
+                            window.location.href = `project-detail.html?id=${projectId}`;
+                        };
+                        
+                        // Get the main image (first image from array or fallback to single image field)
+                        const mainImage = (project.images && project.images.length > 0) 
+                            ? project.images[0] 
+                            : (project.image || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');
+                        
                         projectItem.innerHTML = `
                             <div class="project-image">
-                                <img src="${project.image || 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80'}" alt="${project.alt || project.name || 'Project'}">
+                                <img src="${mainImage}" alt="${project.alt || project.name || 'Project'}">
                             </div>
                             <h3 class="project-caption">${project.name || 'Project'}</h3>
                         `;
@@ -112,6 +125,15 @@ async function loadProjectsSection() {
                     }
                 });
                 console.log('Loaded', count, 'projects from Firebase');
+                
+                // Apply stagger animation to make projects visible
+                const items = projectsGrid.querySelectorAll('.stagger-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
             } else {
                 console.log('No projects in Firebase, loading default content...');
                 // Load default content
@@ -136,6 +158,15 @@ async function loadProjectsSection() {
                     </div>
                 `;
                 console.log('Loaded default projects content');
+                
+                // Apply stagger animation to make projects visible
+                const items = projectsGrid.querySelectorAll('.stagger-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
             }
         }
         
@@ -165,6 +196,15 @@ async function loadProjectsSection() {
                     <h3 class="project-caption">Hawthorn</h3>
                 </div>
             `;
+            
+            // Apply stagger animation to make projects visible
+            const items = projectsGrid.querySelectorAll('.stagger-item');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
         }
     }
 }
@@ -263,23 +303,45 @@ async function loadServicesSection() {
             if (servicesSnapshot.size > 0) {
                 console.log('Loading services from Firebase...');
                 let count = 0;
-                servicesSnapshot.forEach(doc => {
+                servicesSnapshot.forEach(docSnapshot => {
                     if (count < 3) { // Limit to 3 for homepage
-                        const service = doc.data();
+                        const service = docSnapshot.data();
+                        const serviceId = docSnapshot.id;
                         const serviceCard = document.createElement('div');
                         serviceCard.className = 'service-card stagger-item architectural-hover';
+                        
+                        // Make service clickable
+                        serviceCard.style.cursor = 'pointer';
+                        serviceCard.onclick = () => {
+                            window.location.href = `service-detail.html?id=${serviceId}`;
+                        };
+                        
+                        // Get the main image (first image from array or fallback to single image field)
+                        const mainImage = (service.images && service.images.length > 0) 
+                            ? service.images[0] 
+                            : (service.image || 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');
+                        
                         serviceCard.innerHTML = `
                             <div class="service-image">
-                                <img src="${service.image || 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80'}" alt="${service.alt || service.name || 'Service'}">
+                                <img src="${mainImage}" alt="${service.alt || service.name || 'Service'}">
                             </div>
                             <h3 class="service-name">${service.name || 'Service'}</h3>
-                            <a href="#${service.name ? service.name.toLowerCase().replace(/\s+/g, '-') : 'service'}" class="service-link">Learn more →</a>
+                            <a href="service-detail.html?id=${serviceId}" class="service-link" onclick="event.stopPropagation();">Learn more →</a>
                         `;
                         servicesGrid.appendChild(serviceCard);
                         count++;
                     }
                 });
                 console.log('Loaded', count, 'services from Firebase');
+                
+                // Apply stagger animation to make services visible
+                const items = servicesGrid.querySelectorAll('.stagger-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
             } else {
                 console.log('No services in Firebase, loading default content...');
                 // Load default content
@@ -307,6 +369,15 @@ async function loadServicesSection() {
                     </div>
                 `;
                 console.log('Loaded default services content');
+                
+                // Apply stagger animation to make services visible
+                const items = servicesGrid.querySelectorAll('.stagger-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
             }
         }
         
@@ -339,6 +410,15 @@ async function loadServicesSection() {
                     <a href="#custom-renovation" class="service-link">Learn more →</a>
                 </div>
             `;
+            
+            // Apply stagger animation to make services visible
+            const items = servicesGrid.querySelectorAll('.stagger-item');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
         }
     }
 }
@@ -372,29 +452,73 @@ async function loadNewsSection() {
             let count = 0;
             const maxNews = 4;
             
-            newsSnapshot.forEach(doc => {
+            newsSnapshot.forEach(docSnapshot => {
                 if (count < maxNews) {
-                    const news = doc.data();
+                    const news = docSnapshot.data();
+                    const newsId = docSnapshot.id;
                     const newsCard = document.createElement('article');
                     newsCard.className = 'news-card stagger-item architectural-hover';
+                    
+                    // Make news clickable
+                    newsCard.style.cursor = 'pointer';
+                    newsCard.onclick = () => {
+                        window.location.href = `news-detail.html?id=${newsId}`;
+                    };
+                    
+                    // Get the main image (first image from array or fallback to single image field)
+                    const mainImage = (news.images && news.images.length > 0) 
+                        ? news.images[0] 
+                        : (news.image || '');
+                    
                     newsCard.innerHTML = `
                         <div class="news-image">
-                            <img src="${news.image || ''}" alt="${news.alt || news.title}">
+                            <img src="${mainImage}" alt="${news.alt || news.title}">
                         </div>
                         <div class="news-content">
                             <span class="news-date">${news.date || ''}</span>
                             <h3 class="news-article-title">${news.title || ''}</h3>
-                            <a href="#${news.title ? news.title.toLowerCase().replace(/\s+/g, '-') : ''}" class="news-link">${news.linkText || 'Learn more'}</a>
+                            <a href="news-detail.html?id=${newsId}" class="news-link" onclick="event.stopPropagation();">${news.linkText || 'Read more'}</a>
                         </div>
                     `;
                     newsGrid.appendChild(newsCard);
                     count++;
                 }
             });
+            
+            // Apply stagger animation to make news visible
+            const items = newsGrid.querySelectorAll('.stagger-item');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        } else {
+            // If no news in Firestore, ensure default HTML content is visible
+            const newsGrid = document.querySelector('.news-grid');
+            if (newsGrid) {
+                const items = newsGrid.querySelectorAll('.stagger-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                        item.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }
         }
-        // If no news in Firestore, keep the default HTML content (don't clear it)
     } catch (error) {
         console.error('Error loading news section:', error);
+        // Ensure default content is visible even on error
+        const newsGrid = document.querySelector('.news-grid');
+        if (newsGrid) {
+            const items = newsGrid.querySelectorAll('.stagger-item');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
     }
 }
 

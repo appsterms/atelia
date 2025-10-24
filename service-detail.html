@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Details - Atelia Built</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Service Detail Specific Styles */
+        .service-detail-hero {
+            position: relative;
+            width: 100%;
+            height: 70vh;
+            min-height: 400px;
+            overflow: hidden;
+            background: #e4e1d5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-detail-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .service-hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .service-hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            color: white;
+            text-align: center;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+
+        .service-detail-content {
+            background-color: #e4e1d5;
+            padding: 80px 20px;
+        }
+
+        .service-detail-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .service-header {
+            max-width: 900px;
+            margin-bottom: 60px;
+        }
+
+        .service-category {
+            display: inline-block;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2A2A2A;
+            background: rgba(255,255,255,0.6);
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .service-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: #2A2A2A;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .service-short-description {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #2A2A2A;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+
+        .service-description {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 50px;
+        }
+
+        .service-description p {
+            margin-bottom: 20px;
+        }
+
+        .service-features {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 60px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .service-features h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #2A2A2A;
+            margin-bottom: 30px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: start;
+            gap: 15px;
+        }
+
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: #2A2A2A;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 20px;
+        }
+
+        .feature-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .service-process {
+            margin-bottom: 60px;
+        }
+
+        .service-process h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #2A2A2A;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .process-step {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .process-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .step-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #2A2A2A;
+            font-weight: 700;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .step-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2A2A2A;
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .service-gallery {
+            margin-bottom: 60px;
+        }
+
+        .service-gallery h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #2A2A2A;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
+            aspect-ratio: 4/3;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Large featured image */
+        .gallery-item.featured {
+            grid-column: span 2;
+            aspect-ratio: 16/9;
+        }
+
+        .service-cta {
+            background: #2A2A2A;
+            color: white;
+            padding: 60px 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .service-cta h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .service-cta p {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .service-cta .btn {
+            background: white;
+            color: #2A2A2A;
+            padding: 15px 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .service-cta .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .back-to-services {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2A2A2A;
+            text-decoration: none;
+            margin-bottom: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-services:hover {
+            color: #666;
+            transform: translateX(-5px);
+        }
+
+        .back-to-services svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .loading-state {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e4e1d5;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #2A2A2A;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-state {
+            min-height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #e4e1d5;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error-state h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #2A2A2A;
+            margin-bottom: 20px;
+        }
+
+        .error-state p {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .service-hero-title {
+                font-size: 2.5rem;
+            }
+
+            .service-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .service-detail-hero {
+                height: 50vh;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .gallery-item.featured {
+                grid-column: span 1;
+            }
+
+            .features-grid,
+            .process-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <h1><a href="index.html" style="text-decoration: none; color: inherit;">Atelia Built.</a></h1>
+            </div>
+            <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">☰</button>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="index.html#about">ABOUT</a></li>
+                    <li><a href="projects.html">PROJECTS</a></li>
+                    <li><a href="services.html">SERVICES</a></li>
+                    <li><a href="news.html">NEWS</a></li>
+                    <li><a href="login.html">LOGIN</a></li>
+                </ul>
+                <div class="header-actions">
+                    <button class="book-here-btn" onclick="openBookingModal()">BOOK HERE</button>
+                    <span class="phone-number">+61 483 930 343</span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="loading-state">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="error-state" style="display: none;">
+        <h2>Service Not Found</h2>
+        <p>Sorry, we couldn't find the service you're looking for.</p>
+        <a href="services.html" class="btn" style="display: inline-block; padding: 12px 30px; background: #2A2A2A; color: white; text-decoration: none; border-radius: 4px;">Back to Services</a>
+    </div>
+
+    <!-- Service Detail Content -->
+    <div id="serviceDetailContent" style="display: none;">
+        <!-- Hero Section -->
+        <div class="service-detail-hero">
+            <img id="serviceHeroImage" src="" alt="">
+            <div class="service-hero-overlay">
+                <h1 class="service-hero-title" id="serviceHeroTitle"></h1>
+            </div>
+        </div>
+
+        <!-- Service Content -->
+        <div class="service-detail-content">
+            <div class="service-detail-container">
+                <a href="services.html" class="back-to-services">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Services
+                </a>
+
+                <div class="service-header">
+                    <span class="service-category" id="serviceCategory">Service</span>
+                    <h1 id="serviceTitle"></h1>
+                    <p class="service-short-description" id="serviceShortDescription"></p>
+                    <div class="service-description" id="serviceDescription">
+                        <!-- Full description will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Features Section -->
+                <div id="serviceFeaturesSection" class="service-features" style="display: none;">
+                    <h2>What's Included</h2>
+                    <div class="features-grid" id="featuresGrid">
+                        <!-- Features will be dynamically inserted -->
+                    </div>
+                </div>
+
+                <!-- Process Section -->
+                <div id="serviceProcessSection" class="service-process" style="display: none;">
+                    <h2>Our Process</h2>
+                    <div class="process-steps" id="processSteps">
+                        <!-- Process steps will be dynamically inserted -->
+                    </div>
+                </div>
+
+                <!-- Image Gallery -->
+                <div id="serviceGallerySection" class="service-gallery" style="display: none;">
+                    <h2>Gallery</h2>
+                    <div class="gallery-grid" id="serviceGallery">
+                        <!-- Gallery images will be dynamically inserted -->
+                    </div>
+                </div>
+
+                <!-- Call to Action -->
+                <div class="service-cta">
+                    <h2>Ready to Get Started?</h2>
+                    <p>Let's discuss how we can bring your vision to life with our exceptional craftsmanship.</p>
+                    <button class="btn" onclick="openBookingModal()">Book a Discovery Call</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeBookingModal()">&times;</span>
+            <h2>Book a Discovery Call</h2>
+            <p style="color: #666; margin-bottom: 30px;">Fill out the form below and we'll get back to you shortly.</p>
+            
+            <form id="bookingForm">
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="bookingName">Full Name *</label>
+                        <input type="text" id="bookingName" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="bookingEmail">Email *</label>
+                        <input type="email" id="bookingEmail" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="bookingPhone">Phone Number *</label>
+                        <input type="tel" id="bookingPhone" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="bookingService">Service Interested In *</label>
+                        <select id="bookingService" required>
+                            <option value="">Select a service</option>
+                            <option value="Site preparation">Site preparation</option>
+                            <option value="Final finishes">Final finishes</option>
+                            <option value="Custom Renovation">Custom Renovation</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-field">
+                    <label for="bookingMessage">Project Details *</label>
+                    <textarea id="bookingMessage" rows="5" required placeholder="Tell us about your project..."></textarea>
+                </div>
+                
+                <div id="bookingStatus" class="booking-status"></div>
+                
+                <button type="submit" class="submit-booking-btn">Submit Booking Request</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <!-- Footer Brand -->
+                <div class="footer-brand">
+                    <h3 class="footer-logo">Atelia Built.</h3>
+                    <p class="footer-tagline">Luxury Home builder dedicated to translating exceptional design into exceptional construction.</p>
+                </div>
+
+                <!-- Footer Links -->
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Quick Links</h4>
+                        <ul>
+                            <li><a href="/#testimonials">Testimonials</a></li>
+                            <li><a href="/#about">About</a></li>
+                            <li><a href="/services">Services</a></li>
+                            <li><a href="/news">News</a></li>
+                            <li><a href="/#contact">Contact</a></li>
+                            <li><a href="/projects">Projects</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Contacts</h4>
+                        <ul>
+                            <li><strong>Address:</strong></li>
+                            <li>1411 Chili Ave,</li>
+                            <li>Rochester North Dakota,</li>
+                            <li>United States</li>
+                            <li><strong>Phone:</strong> +61 483 930 343</li>
+                            <li><strong>Email:</strong> info@ateliabuilt.com</li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4>Working Hours</h4>
+                        <ul>
+                            <li>Monday - Friday</li>
+                            <li>09.00 - 23.00</li>
+                            <li>&nbsp;</li>
+                            <li>Sunday</li>
+                            <li>09.00 - 16.00</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Social & Copyright -->
+            <div class="footer-bottom">
+                <div class="footer-social">
+                    <a href="#" aria-label="Instagram"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+                    <a href="#" aria-label="LinkedIn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    <a href="#" aria-label="Facebook"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+                    <a href="#" aria-label="Twitter"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+                </div>
+                <p class="footer-copyright">&copy; 2024 Atelia Built. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="animations.js"></script>
+    <script type="module" src="service-detail.js"></script>
+    <script type="module" src="booking.js"></script>
+</body>
+</html>
+

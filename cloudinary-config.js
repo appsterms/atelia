@@ -4,7 +4,7 @@ export const cloudinaryConfig = {
     apiKey: '321487164178956',
     // Note: API Secret should NEVER be exposed in client-side code
     // We'll use unsigned upload preset for client-side uploads
-    uploadPreset: 'atelia_uploads' // You need to create this in Cloudinary dashboard
+    uploadPreset: 'graphiqmedia'
 };
 
 // Cloudinary Upload Widget

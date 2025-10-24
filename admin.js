@@ -1,6 +1,6 @@
 // Firebase Admin Panel JavaScript
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, updateDoc, deleteDoc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 import { cloudinaryConfig } from './cloudinary-config.js';
 
@@ -492,6 +492,94 @@ async function saveSettings() {
     }
 }
 
+// Change admin password
+async function changePassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const statusEl = document.getElementById('passwordChangeStatus');
+    
+    // Validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        statusEl.textContent = 'Please fill in all password fields';
+        statusEl.className = 'status error';
+        statusEl.classList.remove('hidden');
+        setTimeout(() => statusEl.classList.add('hidden'), 3000);
+        return;
+    }
+    
+    if (newPassword.length < 6) {
+        statusEl.textContent = 'New password must be at least 6 characters';
+        statusEl.className = 'status error';
+        statusEl.classList.remove('hidden');
+        setTimeout(() => statusEl.classList.add('hidden'), 3000);
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        statusEl.textContent = 'New passwords do not match';
+        statusEl.className = 'status error';
+        statusEl.classList.remove('hidden');
+        setTimeout(() => statusEl.classList.add('hidden'), 3000);
+        return;
+    }
+    
+    try {
+        const user = auth.currentUser;
+        
+        if (!user || !user.email) {
+            statusEl.textContent = 'No user logged in';
+            statusEl.className = 'status error';
+            statusEl.classList.remove('hidden');
+            setTimeout(() => statusEl.classList.add('hidden'), 3000);
+            return;
+        }
+        
+        // Show loading state
+        statusEl.textContent = 'Changing password...';
+        statusEl.className = 'status info';
+        statusEl.classList.remove('hidden');
+        
+        // Reauthenticate user with current password
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        await reauthenticateWithCredential(user, credential);
+        
+        // Update password
+        await updatePassword(user, newPassword);
+        
+        // Success
+        statusEl.textContent = 'Password changed successfully! ✓';
+        statusEl.className = 'status success';
+        
+        // Clear form
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        
+        setTimeout(() => statusEl.classList.add('hidden'), 5000);
+        
+    } catch (error) {
+        console.error('Password change error:', error);
+        
+        let errorMessage = 'Failed to change password';
+        
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+            errorMessage = 'Current password is incorrect';
+        } else if (error.code === 'auth/weak-password') {
+            errorMessage = 'New password is too weak';
+        } else if (error.code === 'auth/requires-recent-login') {
+            errorMessage = 'Please log out and log back in, then try again';
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        
+        statusEl.textContent = errorMessage;
+        statusEl.className = 'status error';
+        statusEl.classList.remove('hidden');
+        setTimeout(() => statusEl.classList.add('hidden'), 5000);
+    }
+}
+
 // Project management
 function renderProjectsList() {
     const container = document.getElementById('projectsList');
@@ -499,38 +587,181 @@ function renderProjectsList() {
     
     projects.forEach((project, index) => {
         const projectDiv = document.createElement('div');
-        projectDiv.className = 'item-card';
+        projectDiv.className = 'modern-project-card';
+        
+        // Get main image for thumbnail
+        const images = project.images || [];
+        const mainImage = images.length > 0 ? images[0] : (project.image || '');
+        
+        // Render image thumbnails
+        const imagesHtml = images.map((img, idx) => `
+            <div class="image-thumbnail">
+                <img src="${img}" alt="Image ${idx + 1}">
+                <button onclick="removeProjectImage('${project.id}', ${idx})" class="remove-image-btn" title="Remove image">×</button>
+                ${idx === 0 ? '<span class="main-badge">Main</span>' : ''}
+            </div>
+        `).join('');
+        
         projectDiv.innerHTML = `
-            <h4>Project ${index + 1}</h4>
-            <div class="grid">
-                <div class="form-group">
-                    <label>Name:</label>
-                    <input type="text" id="projectName_${project.id}" value="${project.name || ''}">
+            <div class="project-card-header">
+                <div class="project-card-preview">
+                    ${mainImage ? `<img src="${mainImage}" alt="${project.name || 'Project'}">` : '<div class="no-image-placeholder">📷</div>'}
                 </div>
-                <div class="form-group">
-                    <label>Image URL:</label>
-                    <input type="text" id="projectImage_${project.id}" value="${project.image || ''}" readonly>
-                    <button onclick="uploadProjectImage('${project.id}')" class="btn" style="margin-top: 10px;">Upload Image</button>
-                    ${project.image ? `<img src="${project.image}" class="image-preview" alt="Preview">` : ''}
+                <div class="project-card-info">
+                    <h3>${project.name || 'New Project'}</h3>
+                    <div class="project-card-meta">
+                        ${project.location ? `<span>📍 ${project.location}</span>` : ''}
+                        ${project.year ? `<span>📅 ${project.year}</span>` : ''}
+                        ${images.length > 0 ? `<span>🖼️ ${images.length} ${images.length === 1 ? 'image' : 'images'}</span>` : ''}
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Alt Text:</label>
-                    <input type="text" id="projectAlt_${project.id}" value="${project.alt || ''}">
+                <div class="project-card-actions">
+                    <button onclick="toggleProjectDetails('${project.id}')" class="btn-icon" title="Expand/Collapse">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <button onclick="deleteProject('${project.id}')" class="btn-icon btn-danger-icon" title="Delete">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <div class="btn-group">
-                <button onclick="updateProject('${project.id}')" class="btn btn-success">Update</button>
-                <button onclick="deleteProject('${project.id}')" class="btn btn-danger">Delete</button>
+            
+            <div id="projectDetails_${project.id}" class="project-card-details" style="display: none;">
+                <div class="project-tabs">
+                    <button class="tab-btn active" onclick="switchProjectTab('${project.id}', 'basic')">📋 Basic Info</button>
+                    <button class="tab-btn" onclick="switchProjectTab('${project.id}', 'team')">👥 Team</button>
+                    <button class="tab-btn" onclick="switchProjectTab('${project.id}', 'media')">🎬 Media</button>
+                </div>
+                
+                <!-- Basic Info Tab -->
+                <div id="projectTab_${project.id}_basic" class="tab-content active">
+                    <div class="compact-form">
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label>Project Name</label>
+                                <input type="text" id="projectName_${project.id}" value="${project.name || ''}" placeholder="Warrandyte North 54">
+                            </div>
+                            <div class="form-field">
+                                <label>Year</label>
+                                <input type="text" id="projectYear_${project.id}" value="${project.year || ''}" placeholder="2023">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>Location</label>
+                            <input type="text" id="projectLocation_${project.id}" value="${project.location || ''}" placeholder="Warrandyte North, VIC">
+                        </div>
+                        <div class="form-field">
+                            <label>Description</label>
+                            <textarea id="projectDescription_${project.id}" rows="3" placeholder="Project description...">${project.description || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Tab -->
+                <div id="projectTab_${project.id}_team" class="tab-content">
+                    <div class="compact-form">
+                        <div class="form-field">
+                            <label>Builder</label>
+                            <input type="text" id="projectBuilder_${project.id}" value="${project.builder || ''}" placeholder="Demardi">
+                        </div>
+                        <div class="form-field">
+                            <label>Interior Designer</label>
+                            <input type="text" id="projectDesigner_${project.id}" value="${project.designer || ''}" placeholder="Hilltop House">
+                        </div>
+                        <div class="form-field">
+                            <label>Photographer</label>
+                            <input type="text" id="projectPhotographer_${project.id}" value="${project.photographer || ''}" placeholder="Tatjana Plitt">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Media Tab -->
+                <div id="projectTab_${project.id}_media" class="tab-content">
+                    <div class="compact-form">
+                        <div class="media-section">
+                            <div class="media-header">
+                                <h4>Images (${images.length})</h4>
+                                <button onclick="uploadProjectImages('${project.id}')" class="btn-small btn-success">
+                                    📷 Upload Images
+                                </button>
+                            </div>
+                            <div class="images-grid">
+                                ${imagesHtml || '<div class="no-images-placeholder">No images yet. Click "Upload Images" to add photos.</div>'}
+                            </div>
+                        </div>
+                        
+                        <div class="form-field" style="margin-top: 20px;">
+                            <label>YouTube Video URL (optional)</label>
+                            <input type="url" id="projectVideoUrl_${project.id}" value="${project.videoUrl || ''}" placeholder="https://www.youtube.com/watch?v=...">
+                        </div>
+                        <div class="form-field">
+                            <label>Video Title</label>
+                            <input type="text" id="projectVideoTitle_${project.id}" value="${project.videoTitle || ''}" placeholder="Client Testimonial">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card-footer">
+                    <button onclick="updateProject('${project.id}')" class="btn btn-success">💾 Save Changes</button>
+                    <button onclick="toggleProjectDetails('${project.id}')" class="btn">Cancel</button>
+                </div>
             </div>
         `;
         container.appendChild(projectDiv);
     });
 }
 
+// Toggle project details expansion
+function toggleProjectDetails(projectId) {
+    const details = document.getElementById(`projectDetails_${projectId}`);
+    if (details) {
+        const isVisible = details.style.display !== 'none';
+        details.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+// Switch between project tabs
+function switchProjectTab(projectId, tabName) {
+    // Hide all tabs for this project
+    const allTabs = document.querySelectorAll(`[id^="projectTab_${projectId}_"]`);
+    allTabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Remove active class from all tab buttons
+    const card = document.querySelector(`#projectDetails_${projectId}`).closest('.modern-project-card');
+    const allBtns = card.querySelectorAll('.tab-btn');
+    allBtns.forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected tab
+    const selectedTab = document.getElementById(`projectTab_${projectId}_${tabName}`);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    // Activate corresponding button
+    const btnIndex = tabName === 'basic' ? 0 : tabName === 'team' ? 1 : 2;
+    if (allBtns[btnIndex]) {
+        allBtns[btnIndex].classList.add('active');
+    }
+}
+
 async function addProject() {
     try {
         await addDoc(collection(db, 'projects'), {
             name: 'New Project',
+            location: '',
+            year: '',
+            builder: '',
+            designer: '',
+            photographer: '',
+            description: '',
+            videoUrl: '',
+            videoTitle: '',
+            images: [],
+            // Keep old fields for backward compatibility
             image: '',
             alt: ''
         });
@@ -543,12 +774,26 @@ async function addProject() {
 
 async function updateProject(projectId) {
     try {
+        // Get current project to preserve images array
+        const currentProject = projects.find(p => p.id === projectId);
+        
         await updateDoc(doc(db, 'projects', projectId), {
             name: document.getElementById(`projectName_${projectId}`).value,
-            image: document.getElementById(`projectImage_${projectId}`).value,
-            alt: document.getElementById(`projectAlt_${projectId}`).value
+            location: document.getElementById(`projectLocation_${projectId}`).value,
+            year: document.getElementById(`projectYear_${projectId}`).value,
+            builder: document.getElementById(`projectBuilder_${projectId}`).value,
+            designer: document.getElementById(`projectDesigner_${projectId}`).value,
+            photographer: document.getElementById(`projectPhotographer_${projectId}`).value,
+            description: document.getElementById(`projectDescription_${projectId}`).value,
+            videoUrl: document.getElementById(`projectVideoUrl_${projectId}`).value,
+            videoTitle: document.getElementById(`projectVideoTitle_${projectId}`).value,
+            images: currentProject.images || [],
+            // Update old image field with first image for backward compatibility
+            image: (currentProject.images && currentProject.images[0]) || '',
+            alt: document.getElementById(`projectName_${projectId}`).value
         });
         showStatus('Project updated!', 'success');
+        loadContent(); // Reload to reflect changes
     } catch (error) {
         showStatus('Error updating project: ' + error.message, 'error');
     }
@@ -566,6 +811,118 @@ async function deleteProject(projectId) {
     }
 }
 
+// Upload multiple images for a project
+// Custom lightweight image upload
+async function uploadToCloudinary(file, folder) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', cloudinaryConfig.uploadPreset);
+    formData.append('folder', folder);
+    
+    const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,
+        {
+            method: 'POST',
+            body: formData
+        }
+    );
+    
+    if (!response.ok) {
+        throw new Error('Upload failed');
+    }
+    
+    const data = await response.json();
+    return data.secure_url;
+}
+
+function uploadProjectImages(projectId) {
+    // Create file input
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
+    input.multiple = true;
+    
+    input.onchange = async (e) => {
+        const files = Array.from(e.target.files);
+        
+        if (files.length === 0) return;
+        
+        // Validate files
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const invalidFiles = files.filter(f => f.size > maxSize);
+        
+        if (invalidFiles.length > 0) {
+            showStatus('Some files are too large (max 5MB per file)', 'error');
+            return;
+        }
+        
+        if (files.length > 10) {
+            showStatus('Maximum 10 images at a time', 'error');
+            return;
+        }
+        
+        showStatus(`Uploading ${files.length} image${files.length > 1 ? 's' : ''}...`, 'info');
+        
+        try {
+            // Get current project
+            const currentProject = projects.find(p => p.id === projectId);
+            const currentImages = currentProject.images || [];
+            
+            // Upload all files
+            const uploadPromises = files.map(file => uploadToCloudinary(file, 'atelia/projects'));
+            const uploadedUrls = await Promise.all(uploadPromises);
+            
+            // Add new images to array
+            const updatedImages = [...currentImages, ...uploadedUrls];
+            
+            // Update Firestore
+            await updateDoc(doc(db, 'projects', projectId), {
+                images: updatedImages,
+                // Update old image field with first image for backward compatibility
+                image: updatedImages[0] || ''
+            });
+            
+            // Reload content to show new images
+            await loadContent();
+            showStatus(`${files.length} image${files.length > 1 ? 's' : ''} uploaded successfully!`, 'success');
+        } catch (err) {
+            console.error('Error uploading images:', err);
+            showStatus('Error uploading images: ' + err.message, 'error');
+        }
+    };
+    
+    // Trigger file picker
+    input.click();
+}
+
+// Remove image from project
+async function removeProjectImage(projectId, imageIndex) {
+    if (confirm('Are you sure you want to remove this image?')) {
+        try {
+            // Get current project
+            const currentProject = projects.find(p => p.id === projectId);
+            const currentImages = currentProject.images || [];
+            
+            // Remove image at index
+            const updatedImages = currentImages.filter((_, idx) => idx !== imageIndex);
+            
+            // Update Firestore
+            await updateDoc(doc(db, 'projects', projectId), {
+                images: updatedImages,
+                // Update old image field with first image for backward compatibility
+                image: updatedImages[0] || ''
+            });
+            
+            // Reload content
+            await loadContent();
+            showStatus('Image removed!', 'success');
+        } catch (error) {
+            console.error('Error removing image:', error);
+            showStatus('Error removing image: ' + error.message, 'error');
+        }
+    }
+}
+
 // Service management
 function renderServicesList() {
     const container = document.getElementById('servicesList');
@@ -573,40 +930,211 @@ function renderServicesList() {
     
     services.forEach((service, index) => {
         const serviceDiv = document.createElement('div');
-        serviceDiv.className = 'item-card';
+        serviceDiv.className = 'modern-project-card';
+        
+        // Get main image for thumbnail
+        const images = service.images || [];
+        const mainImage = images.length > 0 ? images[0] : (service.image || '');
+        
+        // Render image thumbnails
+        const imagesHtml = images.map((img, idx) => `
+            <div class="image-thumbnail">
+                <img src="${img}" alt="Image ${idx + 1}">
+                <button onclick="removeServiceImage('${service.id}', ${idx})" class="remove-image-btn" title="Remove image">×</button>
+                ${idx === 0 ? '<span class="main-badge">Main</span>' : ''}
+            </div>
+        `).join('');
+        
+        // Render existing features
+        const features = service.features || [];
+        const featuresHtml = features.map((feat, idx) => `
+            <div class="list-item-row">
+                <input type="text" value="${feat}" 
+                       id="serviceFeature_${service.id}_${idx}" 
+                       placeholder="Feature description">
+                <button onclick="removeServiceFeature('${service.id}', ${idx})" class="btn-small btn-danger-small" title="Remove">×</button>
+            </div>
+        `).join('');
+        
+        // Render existing process steps
+        const process = service.process || [];
+        const processHtml = process.map((step, idx) => `
+            <div class="process-step-card">
+                <div class="process-step-header">
+                    <span class="step-number">${idx + 1}</span>
+                    <button onclick="removeProcessStep('${service.id}', ${idx})" class="btn-small btn-danger-small" title="Remove">×</button>
+                </div>
+                <input type="text" value="${step.title || ''}" 
+                       id="serviceProcessTitle_${service.id}_${idx}" 
+                       placeholder="Step title (e.g., Consultation)">
+                <textarea id="serviceProcessDesc_${service.id}_${idx}" 
+                          placeholder="Step description" 
+                          rows="2">${step.description || ''}</textarea>
+            </div>
+        `).join('');
+        
         serviceDiv.innerHTML = `
-            <h4>Service ${index + 1}</h4>
-            <div class="grid">
-                <div class="form-group">
-                    <label>Name:</label>
-                    <input type="text" id="serviceName_${service.id}" value="${service.name || ''}">
+            <div class="project-card-header">
+                <div class="project-card-preview">
+                    ${mainImage ? `<img src="${mainImage}" alt="${service.name || 'Service'}">` : '<div class="no-image-placeholder">🔧</div>'}
                 </div>
-                <div class="form-group">
-                    <label>Image URL:</label>
-                    <input type="text" id="serviceImage_${service.id}" value="${service.image || ''}" readonly>
-                    <button onclick="uploadServiceImage('${service.id}')" class="btn" style="margin-top: 10px;">Upload Image</button>
-                    ${service.image ? `<img src="${service.image}" class="image-preview" alt="Preview">` : ''}
+                <div class="project-card-info">
+                    <h3>${service.name || 'New Service'}</h3>
+                    <div class="project-card-meta">
+                        ${service.category ? `<span>🏷️ ${service.category}</span>` : ''}
+                        ${features.length > 0 ? `<span>✓ ${features.length} ${features.length === 1 ? 'feature' : 'features'}</span>` : ''}
+                        ${images.length > 0 ? `<span>🖼️ ${images.length} ${images.length === 1 ? 'image' : 'images'}</span>` : ''}
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Alt Text:</label>
-                    <input type="text" id="serviceAlt_${service.id}" value="${service.alt || ''}">
+                <div class="project-card-actions">
+                    <button onclick="toggleServiceDetails('${service.id}')" class="btn-icon" title="Expand/Collapse">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <button onclick="deleteService('${service.id}')" class="btn-icon btn-danger-icon" title="Delete">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <div class="btn-group">
-                <button onclick="updateService('${service.id}')" class="btn btn-success">Update</button>
-                <button onclick="deleteService('${service.id}')" class="btn btn-danger">Delete</button>
+            
+            <div id="serviceDetails_${service.id}" class="project-card-details" style="display: none;">
+                <div class="project-tabs">
+                    <button class="tab-btn active" onclick="switchServiceTab('${service.id}', 'basic')">📋 Basic Info</button>
+                    <button class="tab-btn" onclick="switchServiceTab('${service.id}', 'content')">📝 Content</button>
+                    <button class="tab-btn" onclick="switchServiceTab('${service.id}', 'media')">🎬 Media</button>
+                </div>
+                
+                <!-- Basic Info Tab -->
+                <div id="serviceTab_${service.id}_basic" class="tab-content active">
+                    <div class="compact-form">
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label>Service Name</label>
+                                <input type="text" id="serviceName_${service.id}" value="${service.name || ''}" placeholder="Site Preparation">
+                            </div>
+                            <div class="form-field">
+                                <label>Category</label>
+                                <input type="text" id="serviceCategory_${service.id}" value="${service.category || ''}" placeholder="Construction">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>Short Description <small>(listing page)</small></label>
+                            <textarea id="serviceShortDescription_${service.id}" rows="2" placeholder="Brief one-liner about the service">${service.shortDescription || ''}</textarea>
+                        </div>
+                        <div class="form-field">
+                            <label>Full Description <small>(detail page)</small></label>
+                            <textarea id="serviceFullDescription_${service.id}" rows="4" placeholder="Detailed description. Use double line breaks for paragraphs.">${service.fullDescription || service.description || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Content Tab -->
+                <div id="serviceTab_${service.id}_content" class="tab-content">
+                    <div class="compact-form">
+                        <div class="content-section">
+                            <div class="content-section-header">
+                                <h4>✓ Features (${features.length})</h4>
+                                <button onclick="addServiceFeature('${service.id}')" class="btn-small btn-success">
+                                    + Add Feature
+                                </button>
+                            </div>
+                            <div id="serviceFeaturesList_${service.id}" class="list-items-container">
+                                ${featuresHtml || '<div class="empty-state">No features added yet. Click "Add Feature" to start.</div>'}
+                            </div>
+                        </div>
+                        
+                        <div class="content-section" style="margin-top: 24px;">
+                            <div class="content-section-header">
+                                <h4>⚙️ Process Steps (${process.length})</h4>
+                                <button onclick="addProcessStep('${service.id}')" class="btn-small btn-success">
+                                    + Add Step
+                                </button>
+                            </div>
+                            <div id="serviceProcessList_${service.id}" class="process-steps-container">
+                                ${processHtml || '<div class="empty-state">No process steps added yet. Click "Add Step" to start.</div>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Media Tab -->
+                <div id="serviceTab_${service.id}_media" class="tab-content">
+                    <div class="compact-form">
+                        <div class="media-section">
+                            <div class="media-header">
+                                <h4>Images (${images.length})</h4>
+                                <button onclick="uploadServiceImages('${service.id}')" class="btn-small btn-success">
+                                    📷 Upload Images
+                                </button>
+                            </div>
+                            <div class="images-grid">
+                                ${imagesHtml || '<div class="no-images-placeholder">No images yet. Click "Upload Images" to add photos.</div>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card-footer">
+                    <button onclick="updateService('${service.id}')" class="btn btn-success">💾 Save Changes</button>
+                    <button onclick="toggleServiceDetails('${service.id}')" class="btn">Cancel</button>
+                </div>
             </div>
         `;
         container.appendChild(serviceDiv);
     });
 }
 
+// Toggle service details expansion
+function toggleServiceDetails(serviceId) {
+    const details = document.getElementById(`serviceDetails_${serviceId}`);
+    if (details) {
+        const isVisible = details.style.display !== 'none';
+        details.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+// Switch between service tabs
+function switchServiceTab(serviceId, tabName) {
+    // Hide all tabs for this service
+    const allTabs = document.querySelectorAll(`[id^="serviceTab_${serviceId}_"]`);
+    allTabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Remove active class from all tab buttons
+    const card = document.querySelector(`#serviceDetails_${serviceId}`).closest('.modern-project-card');
+    const allBtns = card.querySelectorAll('.tab-btn');
+    allBtns.forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected tab
+    const selectedTab = document.getElementById(`serviceTab_${serviceId}_${tabName}`);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    // Activate corresponding button
+    const btnIndex = tabName === 'basic' ? 0 : tabName === 'content' ? 1 : 2;
+    if (allBtns[btnIndex]) {
+        allBtns[btnIndex].classList.add('active');
+    }
+}
+
 async function addService() {
     try {
         await addDoc(collection(db, 'services'), {
             name: 'New Service',
+            category: '',
+            shortDescription: '',
+            fullDescription: '',
+            features: [],
+            process: [],
+            images: [],
+            // Keep old fields for backward compatibility
             image: '',
-            alt: ''
+            alt: '',
+            description: ''
         });
         loadContent();
         showStatus('Service added!', 'success');
@@ -617,12 +1145,46 @@ async function addService() {
 
 async function updateService(serviceId) {
     try {
+        // Get current service to preserve images array
+        const currentService = services.find(s => s.id === serviceId);
+        
+        // Collect features
+        const features = [];
+        const featureInputs = document.querySelectorAll(`[id^="serviceFeature_${serviceId}_"]`);
+        featureInputs.forEach(input => {
+            if (input.value.trim()) {
+                features.push(input.value.trim());
+            }
+        });
+        
+        // Collect process steps
+        const process = [];
+        const processTitleInputs = document.querySelectorAll(`[id^="serviceProcessTitle_${serviceId}_"]`);
+        processTitleInputs.forEach((titleInput, idx) => {
+            const descInput = document.getElementById(`serviceProcessDesc_${serviceId}_${idx}`);
+            if (titleInput.value.trim() || (descInput && descInput.value.trim())) {
+                process.push({
+                    title: titleInput.value.trim(),
+                    description: descInput ? descInput.value.trim() : ''
+                });
+            }
+        });
+        
         await updateDoc(doc(db, 'services', serviceId), {
             name: document.getElementById(`serviceName_${serviceId}`).value,
-            image: document.getElementById(`serviceImage_${serviceId}`).value,
-            alt: document.getElementById(`serviceAlt_${serviceId}`).value
+            category: document.getElementById(`serviceCategory_${serviceId}`).value,
+            shortDescription: document.getElementById(`serviceShortDescription_${serviceId}`).value,
+            fullDescription: document.getElementById(`serviceFullDescription_${serviceId}`).value,
+            features: features,
+            process: process,
+            images: currentService.images || [],
+            // Update old fields for backward compatibility
+            image: (currentService.images && currentService.images[0]) || '',
+            alt: document.getElementById(`serviceName_${serviceId}`).value,
+            description: document.getElementById(`serviceShortDescription_${serviceId}`).value
         });
         showStatus('Service updated!', 'success');
+        loadContent(); // Reload to reflect changes
     } catch (error) {
         showStatus('Error updating service: ' + error.message, 'error');
     }
@@ -640,6 +1202,121 @@ async function deleteService(serviceId) {
     }
 }
 
+// Helper functions for service features
+function addServiceFeature(serviceId) {
+    const currentService = services.find(s => s.id === serviceId);
+    const features = currentService.features || [];
+    features.push('');
+    currentService.features = features;
+    renderServicesList();
+}
+
+function removeServiceFeature(serviceId, featureIndex) {
+    const currentService = services.find(s => s.id === serviceId);
+    const features = currentService.features || [];
+    features.splice(featureIndex, 1);
+    currentService.features = features;
+    renderServicesList();
+}
+
+// Helper functions for service process steps
+function addProcessStep(serviceId) {
+    const currentService = services.find(s => s.id === serviceId);
+    const process = currentService.process || [];
+    process.push({ title: '', description: '' });
+    currentService.process = process;
+    renderServicesList();
+}
+
+function removeProcessStep(serviceId, stepIndex) {
+    const currentService = services.find(s => s.id === serviceId);
+    const process = currentService.process || [];
+    process.splice(stepIndex, 1);
+    currentService.process = process;
+    renderServicesList();
+}
+
+// Upload multiple images for a service
+function uploadServiceImages(serviceId) {
+    // Create file input
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
+    input.multiple = true;
+    
+    input.onchange = async (e) => {
+        const files = Array.from(e.target.files);
+        
+        if (files.length === 0) return;
+        
+        // Validate files
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const invalidFiles = files.filter(f => f.size > maxSize);
+        
+        if (invalidFiles.length > 0) {
+            showStatus('Some files are too large (max 5MB per file)', 'error');
+            return;
+        }
+        
+        if (files.length > 10) {
+            showStatus('Maximum 10 images at a time', 'error');
+            return;
+        }
+        
+        showStatus(`Uploading ${files.length} image${files.length > 1 ? 's' : ''}...`, 'info');
+        
+        try {
+            const currentService = services.find(s => s.id === serviceId);
+            const currentImages = currentService.images || [];
+            
+            // Upload all files
+            const uploadPromises = files.map(file => uploadToCloudinary(file, 'atelia/services'));
+            const uploadedUrls = await Promise.all(uploadPromises);
+            
+            // Add new images to array
+            const updatedImages = [...currentImages, ...uploadedUrls];
+            
+            // Update Firestore
+            await updateDoc(doc(db, 'services', serviceId), {
+                images: updatedImages,
+                image: updatedImages[0] || ''
+            });
+            
+            // Reload content
+            await loadContent();
+            showStatus(`${files.length} image${files.length > 1 ? 's' : ''} uploaded successfully!`, 'success');
+        } catch (err) {
+            console.error('Error uploading images:', err);
+            showStatus('Error uploading images: ' + err.message, 'error');
+        }
+    };
+    
+    // Trigger file picker
+    input.click();
+}
+
+// Remove image from service
+async function removeServiceImage(serviceId, imageIndex) {
+    if (confirm('Are you sure you want to remove this image?')) {
+        try {
+            const currentService = services.find(s => s.id === serviceId);
+            const currentImages = currentService.images || [];
+            const updatedImages = currentImages.filter((_, idx) => idx !== imageIndex);
+            
+            await updateDoc(doc(db, 'services', serviceId), {
+                images: updatedImages,
+                image: updatedImages[0] || ''
+            });
+            
+            await loadContent();
+            showStatus('Image removed!', 'success');
+        } catch (error) {
+            console.error('Error removing image:', error);
+            showStatus('Error removing image: ' + error.message, 'error');
+        }
+    }
+}
+
 // News management
 function renderNewsList() {
     const container = document.getElementById('newsList');
@@ -647,161 +1324,422 @@ function renderNewsList() {
     
     newsItems.forEach((news, index) => {
         const newsDiv = document.createElement('div');
-        newsDiv.className = 'item-card';
+        newsDiv.className = 'modern-project-card';
+        
+        // Get main image for thumbnail
+        const images = news.images || [];
+        const mainImage = images.length > 0 ? images[0] : (news.image || '');
+        
+        // Render image thumbnails
+        const imagesHtml = images.map((img, idx) => `
+            <div class="image-thumbnail">
+                <img src="${img}" alt="Image ${idx + 1}">
+                <button onclick="removeNewsImage('${news.id}', ${idx})" class="remove-image-btn" title="Remove image">×</button>
+                ${idx === 0 ? '<span class="main-badge">Main</span>' : ''}
+            </div>
+        `).join('');
+        
+        // Render existing tags
+        const tags = news.tags || [];
+        const tagsHtml = tags.map((tag, idx) => `
+            <div class="tag-chip">
+                <span>#${tag}</span>
+                <button onclick="removeNewsTag('${news.id}', ${idx})" class="tag-remove-btn" title="Remove tag">×</button>
+            </div>
+        `).join('');
+        
+        // Format date for display
+        const displayDate = news.date ? new Date(news.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        
         newsDiv.innerHTML = `
-            <h4>News Item ${index + 1}</h4>
-            <div class="grid">
-                <div class="form-group">
-                    <label>Date:</label>
-                    <input type="text" id="newsDate_${news.id}" value="${news.date || ''}">
+            <div class="project-card-header">
+                <div class="project-card-preview">
+                    ${mainImage ? `<img src="${mainImage}" alt="${news.title || 'News'}">` : '<div class="no-image-placeholder">📰</div>'}
                 </div>
-                <div class="form-group">
-                    <label>Title:</label>
-                    <input type="text" id="newsTitle_${news.id}" value="${news.title || ''}">
+                <div class="project-card-info">
+                    <h3>${news.title || 'New Article'}</h3>
+                    <div class="project-card-meta">
+                        ${displayDate ? `<span>📅 ${displayDate}</span>` : ''}
+                        ${news.category ? `<span>🏷️ ${news.category}</span>` : ''}
+                        ${tags.length > 0 ? `<span>🏷 ${tags.length} ${tags.length === 1 ? 'tag' : 'tags'}</span>` : ''}
+                        ${images.length > 0 ? `<span>🖼️ ${images.length} ${images.length === 1 ? 'image' : 'images'}</span>` : ''}
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Image URL:</label>
-                    <input type="text" id="newsImage_${news.id}" value="${news.image || ''}" readonly>
-                    <button onclick="uploadNewsImage('${news.id}')" class="btn" style="margin-top: 10px;">Upload Image</button>
-                    ${news.image ? `<img src="${news.image}" class="image-preview" alt="Preview">` : ''}
-                </div>
-                <div class="form-group">
-                    <label>Alt Text:</label>
-                    <input type="text" id="newsAlt_${news.id}" value="${news.alt || ''}">
-                </div>
-                <div class="form-group">
-                    <label>Link Text:</label>
-                    <input type="text" id="newsLink_${news.id}" value="${news.linkText || ''}">
+                <div class="project-card-actions">
+                    <button onclick="toggleNewsDetails('${news.id}')" class="btn-icon" title="Expand/Collapse">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <button onclick="deleteNews('${news.id}')" class="btn-icon btn-danger-icon" title="Delete">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
-            <div class="btn-group">
-                <button onclick="updateNews('${news.id}')" class="btn btn-success">Update</button>
-                <button onclick="deleteNews('${news.id}')" class="btn btn-danger">Delete</button>
+            
+            <div id="newsDetails_${news.id}" class="project-card-details" style="display: none;">
+                <div class="project-tabs">
+                    <button class="tab-btn active" onclick="switchNewsTab('${news.id}', 'basic')">📋 Basic Info</button>
+                    <button class="tab-btn" onclick="switchNewsTab('${news.id}', 'content')">📝 Content</button>
+                    <button class="tab-btn" onclick="switchNewsTab('${news.id}', 'media')">🎬 Media</button>
+                </div>
+                
+                <!-- Basic Info Tab -->
+                <div id="newsTab_${news.id}_basic" class="tab-content active">
+                    <div class="compact-form">
+                        <div class="form-field">
+                            <label>Article Title</label>
+                            <input type="text" id="newsTitle_${news.id}" value="${news.title || ''}" placeholder="Award-Winning Project Completed">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-field">
+                                <label>Date</label>
+                                <input type="date" id="newsDate_${news.id}" value="${news.date || ''}">
+                            </div>
+                            <div class="form-field">
+                                <label>Category</label>
+                                <input type="text" id="newsCategory_${news.id}" value="${news.category || ''}" placeholder="Awards, Projects">
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label>Author</label>
+                            <input type="text" id="newsAuthor_${news.id}" value="${news.author || ''}" placeholder="Atelia Built Team">
+                        </div>
+                        <div class="form-field">
+                            <label>Excerpt <small>(listing page summary)</small></label>
+                            <textarea id="newsExcerpt_${news.id}" rows="3" placeholder="Brief summary that appears on the news listing page">${news.excerpt || news.description || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Content Tab -->
+                <div id="newsTab_${news.id}_content" class="tab-content">
+                    <div class="compact-form">
+                        <div class="form-field">
+                            <label>Full Article Content</label>
+                            <textarea id="newsContent_${news.id}" rows="12" placeholder="Full article content. Use double line breaks for paragraphs.
+
+## For headings, use two hashtags
+### For subheadings, use three hashtags
+> Use > for quotes
+
+Write naturally and use line breaks to separate paragraphs.">${news.content || ''}</textarea>
+                            <small style="display: block; margin-top: 8px; color: #666;">
+                                💡 Formatting tips: Double line breaks = new paragraph | ## = Heading | ### = Subheading | > = Quote
+                            </small>
+                        </div>
+                        
+                        <div class="content-section" style="margin-top: 24px;">
+                            <div class="content-section-header">
+                                <h4>🏷 Tags (${tags.length})</h4>
+                            </div>
+                            <div class="tags-container">
+                                ${tagsHtml || '<div class="empty-state-small">No tags added yet</div>'}
+                            </div>
+                            <div class="add-tag-row">
+                                <input type="text" id="newsNewTag_${news.id}" placeholder="Enter tag name" onkeypress="if(event.key==='Enter'){addNewsTag('${news.id}'); return false;}">
+                                <button onclick="addNewsTag('${news.id}')" class="btn-small btn-success">+ Add Tag</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Media Tab -->
+                <div id="newsTab_${news.id}_media" class="tab-content">
+                    <div class="compact-form">
+                        <div class="media-section">
+                            <div class="media-header">
+                                <h4>Images (${images.length})</h4>
+                                <button onclick="uploadNewsImages('${news.id}')" class="btn-small btn-success">
+                                    📷 Upload Images
+                                </button>
+                            </div>
+                            <div class="images-grid">
+                                ${imagesHtml || '<div class="no-images-placeholder">No images yet. Click "Upload Images" to add photos.</div>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card-footer">
+                    <button onclick="updateNews('${news.id}')" class="btn btn-success">💾 Save Changes</button>
+                    <button onclick="toggleNewsDetails('${news.id}')" class="btn">Cancel</button>
+                </div>
             </div>
         `;
         container.appendChild(newsDiv);
     });
 }
 
+// Toggle news details expansion
+function toggleNewsDetails(newsId) {
+    const details = document.getElementById(`newsDetails_${newsId}`);
+    if (details) {
+        const isVisible = details.style.display !== 'none';
+        details.style.display = isVisible ? 'none' : 'block';
+    }
+}
+
+// Switch between news tabs
+function switchNewsTab(newsId, tabName) {
+    // Hide all tabs for this news
+    const allTabs = document.querySelectorAll(`[id^="newsTab_${newsId}_"]`);
+    allTabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Remove active class from all tab buttons
+    const card = document.querySelector(`#newsDetails_${newsId}`).closest('.modern-project-card');
+    const allBtns = card.querySelectorAll('.tab-btn');
+    allBtns.forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected tab
+    const selectedTab = document.getElementById(`newsTab_${newsId}_${tabName}`);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    // Activate corresponding button
+    const btnIndex = tabName === 'basic' ? 0 : tabName === 'content' ? 1 : 2;
+    if (allBtns[btnIndex]) {
+        allBtns[btnIndex].classList.add('active');
+    }
+}
+
 async function addNews() {
     try {
+        const today = new Date().toISOString().split('T')[0];
         await addDoc(collection(db, 'news'), {
-            date: 'New Date',
-            title: 'New News Item',
+            date: today,
+            title: 'New Article',
+            category: '',
+            author: '',
+            excerpt: '',
+            content: '',
+            tags: [],
+            images: [],
+            // Keep old fields for backward compatibility
             image: '',
             alt: '',
-            linkText: 'Learn more'
+            linkText: 'Read more',
+            description: ''
         });
         loadContent();
-        showStatus('News item added!', 'success');
+        showStatus('News article added!', 'success');
     } catch (error) {
-        showStatus('Error adding news item: ' + error.message, 'error');
+        showStatus('Error adding news article: ' + error.message, 'error');
     }
 }
 
 async function updateNews(newsId) {
     try {
+        // Get current news to preserve images and tags arrays
+        const currentNews = newsItems.find(n => n.id === newsId);
+        
         await updateDoc(doc(db, 'news', newsId), {
             date: document.getElementById(`newsDate_${newsId}`).value,
             title: document.getElementById(`newsTitle_${newsId}`).value,
-            image: document.getElementById(`newsImage_${newsId}`).value,
-            alt: document.getElementById(`newsAlt_${newsId}`).value,
-            linkText: document.getElementById(`newsLink_${newsId}`).value
+            category: document.getElementById(`newsCategory_${newsId}`).value,
+            author: document.getElementById(`newsAuthor_${newsId}`).value,
+            excerpt: document.getElementById(`newsExcerpt_${newsId}`).value,
+            content: document.getElementById(`newsContent_${newsId}`).value,
+            tags: currentNews.tags || [],
+            images: currentNews.images || [],
+            // Update old fields for backward compatibility
+            image: (currentNews.images && currentNews.images[0]) || '',
+            alt: document.getElementById(`newsTitle_${newsId}`).value,
+            linkText: 'Read more',
+            description: document.getElementById(`newsExcerpt_${newsId}`).value
         });
-        showStatus('News item updated!', 'success');
+        showStatus('News article updated!', 'success');
+        loadContent(); // Reload to reflect changes
     } catch (error) {
-        showStatus('Error updating news item: ' + error.message, 'error');
+        showStatus('Error updating news article: ' + error.message, 'error');
     }
 }
 
 async function deleteNews(newsId) {
-    if (confirm('Are you sure you want to delete this news item?')) {
+    if (confirm('Are you sure you want to delete this news article?')) {
         try {
             await deleteDoc(doc(db, 'news', newsId));
             loadContent();
-            showStatus('News item deleted!', 'success');
+            showStatus('News article deleted!', 'success');
         } catch (error) {
-            showStatus('Error deleting news item: ' + error.message, 'error');
+            showStatus('Error deleting news article: ' + error.message, 'error');
+        }
+    }
+}
+
+// Helper functions for news tags
+function addNewsTag(newsId) {
+    const tagInput = document.getElementById(`newsNewTag_${newsId}`);
+    const tagValue = tagInput.value.trim();
+    
+    if (!tagValue) {
+        showStatus('Please enter a tag name', 'error');
+        return;
+    }
+    
+    const currentNews = newsItems.find(n => n.id === newsId);
+    const tags = currentNews.tags || [];
+    
+    if (!tags.includes(tagValue)) {
+        tags.push(tagValue);
+        currentNews.tags = tags;
+        tagInput.value = '';
+        renderNewsList();
+    } else {
+        showStatus('Tag already exists', 'error');
+    }
+}
+
+function removeNewsTag(newsId, tagIndex) {
+    const currentNews = newsItems.find(n => n.id === newsId);
+    const tags = currentNews.tags || [];
+    tags.splice(tagIndex, 1);
+    currentNews.tags = tags;
+    renderNewsList();
+}
+
+// Upload multiple images for a news article
+function uploadNewsImages(newsId) {
+    // Create file input
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
+    input.multiple = true;
+    
+    input.onchange = async (e) => {
+        const files = Array.from(e.target.files);
+        
+        if (files.length === 0) return;
+        
+        // Validate files
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const invalidFiles = files.filter(f => f.size > maxSize);
+        
+        if (invalidFiles.length > 0) {
+            showStatus('Some files are too large (max 5MB per file)', 'error');
+            return;
+        }
+        
+        if (files.length > 10) {
+            showStatus('Maximum 10 images at a time', 'error');
+            return;
+        }
+        
+        showStatus(`Uploading ${files.length} image${files.length > 1 ? 's' : ''}...`, 'info');
+        
+        try {
+            const currentNews = newsItems.find(n => n.id === newsId);
+            const currentImages = currentNews.images || [];
+            
+            // Upload all files
+            const uploadPromises = files.map(file => uploadToCloudinary(file, 'atelia/news'));
+            const uploadedUrls = await Promise.all(uploadPromises);
+            
+            // Add new images to array
+            const updatedImages = [...currentImages, ...uploadedUrls];
+            
+            // Update Firestore
+            await updateDoc(doc(db, 'news', newsId), {
+                images: updatedImages,
+                image: updatedImages[0] || ''
+            });
+            
+            // Reload content
+            await loadContent();
+            showStatus(`${files.length} image${files.length > 1 ? 's' : ''} uploaded successfully!`, 'success');
+        } catch (err) {
+            console.error('Error uploading images:', err);
+            showStatus('Error uploading images: ' + err.message, 'error');
+        }
+    };
+    
+    // Trigger file picker
+    input.click();
+}
+
+// Remove image from news article
+async function removeNewsImage(newsId, imageIndex) {
+    if (confirm('Are you sure you want to remove this image?')) {
+        try {
+            const currentNews = newsItems.find(n => n.id === newsId);
+            const currentImages = currentNews.images || [];
+            const updatedImages = currentImages.filter((_, idx) => idx !== imageIndex);
+            
+            await updateDoc(doc(db, 'news', newsId), {
+                images: updatedImages,
+                image: updatedImages[0] || ''
+            });
+            
+            await loadContent();
+            showStatus('Image removed!', 'success');
+        } catch (error) {
+            console.error('Error removing image:', error);
+            showStatus('Error removing image: ' + error.message, 'error');
         }
     }
 }
 
 // Cloudinary Upload Functions
+// Legacy single image upload functions (kept for backward compatibility)
 function uploadProjectImage(projectId) {
-    openCloudinaryWidget((imageUrl) => {
+    openCustomUploader((imageUrl) => {
         document.getElementById(`projectImage_${projectId}`).value = imageUrl;
         showStatus('Image uploaded successfully!', 'success');
         loadContent(); // Refresh to show preview
-    });
+    }, 'atelia/projects');
 }
 
 function uploadServiceImage(serviceId) {
-    openCloudinaryWidget((imageUrl) => {
+    openCustomUploader((imageUrl) => {
         document.getElementById(`serviceImage_${serviceId}`).value = imageUrl;
         showStatus('Image uploaded successfully!', 'success');
         loadContent(); // Refresh to show preview
-    });
+    }, 'atelia/services');
 }
 
 function uploadNewsImage(newsId) {
-    openCloudinaryWidget((imageUrl) => {
+    openCustomUploader((imageUrl) => {
         document.getElementById(`newsImage_${newsId}`).value = imageUrl;
         showStatus('Image uploaded successfully!', 'success');
         loadContent(); // Refresh to show preview
-    });
+    }, 'atelia/news');
 }
 
-function openCloudinaryWidget(onSuccess) {
-    const widget = cloudinary.createUploadWidget(
-        {
-            cloudName: cloudinaryConfig.cloudName,
-            uploadPreset: 'atelia_uploads', // You need to create this preset
-            folder: 'atelia',
-            sources: ['local', 'url', 'camera'],
-            multiple: false,
-            maxFileSize: 5000000, // 5MB
-            clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-            maxImageWidth: 2000,
-            maxImageHeight: 2000,
-            cropping: true,
-            croppingAspectRatio: null,
-            croppingShowDimensions: true,
-            showSkipCropButton: true,
-            theme: 'minimal',
-            styles: {
-                palette: {
-                    window: '#FFFFFF',
-                    windowBorder: '#3A3A3A',
-                    tabIcon: '#3A3A3A',
-                    menuIcons: '#3A3A3A',
-                    textDark: '#000000',
-                    textLight: '#FFFFFF',
-                    link: '#3A3A3A',
-                    action: '#3A3A3A',
-                    inactiveTabIcon: '#999999',
-                    error: '#F44235',
-                    inProgress: '#3A3A3A',
-                    complete: '#4CAF50',
-                    sourceBg: '#F5F5F5'
-                }
-            }
-        },
-        (error, result) => {
-            if (!error && result && result.event === 'success') {
-                console.log('Upload successful:', result.info);
-                const imageUrl = result.info.secure_url;
-                if (onSuccess) {
-                    onSuccess(imageUrl);
-                }
-                widget.close();
-            } else if (error) {
-                console.error('Upload error:', error);
-                showStatus('Upload failed: ' + error.message, 'error');
-            }
-        }
-    );
+// Custom lightweight uploader for single images
+function openCustomUploader(onSuccess, folder = 'atelia') {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/jpg,image/png,image/webp';
     
-    widget.open();
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        // Validate file size
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            showStatus('File is too large (max 5MB)', 'error');
+            return;
+        }
+        
+        showStatus('Uploading image...', 'info');
+        
+        try {
+            const imageUrl = await uploadToCloudinary(file, folder);
+            if (onSuccess) {
+                onSuccess(imageUrl);
+            }
+        } catch (err) {
+            console.error('Upload error:', err);
+            showStatus('Upload failed: ' + err.message, 'error');
+        }
+    };
+    
+    input.click();
 }
 
 // Bookings Management
@@ -978,18 +1916,37 @@ window.saveServices = saveServices;
 window.saveNews = saveNews;
 window.saveCTA = saveCTA;
 window.saveSettings = saveSettings;
+window.changePassword = changePassword;
 window.addProject = addProject;
 window.updateProject = updateProject;
 window.deleteProject = deleteProject;
 window.uploadProjectImage = uploadProjectImage;
+window.uploadProjectImages = uploadProjectImages;
+window.removeProjectImage = removeProjectImage;
+window.toggleProjectDetails = toggleProjectDetails;
+window.switchProjectTab = switchProjectTab;
 window.addService = addService;
 window.updateService = updateService;
 window.deleteService = deleteService;
 window.uploadServiceImage = uploadServiceImage;
+window.uploadServiceImages = uploadServiceImages;
+window.removeServiceImage = removeServiceImage;
+window.addServiceFeature = addServiceFeature;
+window.removeServiceFeature = removeServiceFeature;
+window.addProcessStep = addProcessStep;
+window.removeProcessStep = removeProcessStep;
+window.toggleServiceDetails = toggleServiceDetails;
+window.switchServiceTab = switchServiceTab;
 window.addNews = addNews;
 window.updateNews = updateNews;
 window.deleteNews = deleteNews;
 window.uploadNewsImage = uploadNewsImage;
+window.uploadNewsImages = uploadNewsImages;
+window.removeNewsImage = removeNewsImage;
+window.addNewsTag = addNewsTag;
+window.removeNewsTag = removeNewsTag;
+window.toggleNewsDetails = toggleNewsDetails;
+window.switchNewsTab = switchNewsTab;
 window.markAsRead = markAsRead;
 window.updateBookingStatus = updateBookingStatus;
 window.deleteBooking = deleteBooking;

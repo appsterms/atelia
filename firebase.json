@@ -30,12 +30,24 @@
         "destination": "/projects.html"
       },
       {
+        "source": "/project-detail",
+        "destination": "/project-detail.html"
+      },
+      {
         "source": "/services",
         "destination": "/services.html"
       },
       {
+        "source": "/service-detail",
+        "destination": "/service-detail.html"
+      },
+      {
         "source": "/news",
         "destination": "/news.html"
+      },
+      {
+        "source": "/news-detail",
+        "destination": "/news-detail.html"
       }
     ],
     "headers": [

@@ -38,14 +38,27 @@ async function loadAllServices() {
             
             servicesSnapshot.forEach(doc => {
                 const service = doc.data();
+                const serviceId = doc.id;
                 const serviceCard = document.createElement('div');
                 serviceCard.className = 'service-card stagger-item architectural-hover';
+                
+                // Make service clickable
+                serviceCard.style.cursor = 'pointer';
+                serviceCard.onclick = () => {
+                    window.location.href = `service-detail.html?id=${serviceId}`;
+                };
+                
+                // Get the main image (first image from array or fallback to single image field)
+                const mainImage = (service.images && service.images.length > 0) 
+                    ? service.images[0] 
+                    : (service.image || '');
+                
                 serviceCard.innerHTML = `
                     <div class="service-image">
-                        <img src="${service.image || ''}" alt="${service.alt || service.name}">
+                        <img src="${mainImage}" alt="${service.alt || service.name}">
                     </div>
                     <h3 class="service-name">${service.name || ''}</h3>
-                    <a href="#${service.name ? service.name.toLowerCase().replace(/\s+/g, '-') : ''}" class="service-link">Learn more →</a>
+                    <a href="service-detail.html?id=${serviceId}" class="service-link" onclick="event.stopPropagation();">Learn more →</a>
                 `;
                 servicesGrid.appendChild(serviceCard);
             });

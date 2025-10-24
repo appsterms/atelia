@@ -38,11 +38,24 @@ async function loadAllProjects() {
             
             projectsSnapshot.forEach(doc => {
                 const project = doc.data();
+                const projectId = doc.id;
                 const projectItem = document.createElement('div');
                 projectItem.className = 'project-item stagger-item architectural-hover';
+                
+                // Make project clickable
+                projectItem.style.cursor = 'pointer';
+                projectItem.onclick = () => {
+                    window.location.href = `project-detail.html?id=${projectId}`;
+                };
+                
+                // Get the main image (first image from array or fallback to single image field)
+                const mainImage = (project.images && project.images.length > 0) 
+                    ? project.images[0] 
+                    : (project.image || '');
+                
                 projectItem.innerHTML = `
                     <div class="project-image">
-                        <img src="${project.image || ''}" alt="${project.alt || project.name}">
+                        <img src="${mainImage}" alt="${project.alt || project.name}">
                     </div>
                     <h3 class="project-caption">${project.name || ''}</h3>
                 `;

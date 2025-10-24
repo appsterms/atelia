@@ -38,16 +38,29 @@ async function loadAllNews() {
             
             newsSnapshot.forEach(doc => {
                 const news = doc.data();
+                const newsId = doc.id;
                 const newsCard = document.createElement('article');
                 newsCard.className = 'news-card stagger-item architectural-hover';
+                
+                // Make news clickable
+                newsCard.style.cursor = 'pointer';
+                newsCard.onclick = () => {
+                    window.location.href = `news-detail.html?id=${newsId}`;
+                };
+                
+                // Get the main image (first image from array or fallback to single image field)
+                const mainImage = (news.images && news.images.length > 0) 
+                    ? news.images[0] 
+                    : (news.image || '');
+                
                 newsCard.innerHTML = `
                     <div class="news-image">
-                        <img src="${news.image || ''}" alt="${news.alt || news.title}">
+                        <img src="${mainImage}" alt="${news.alt || news.title}">
                     </div>
                     <div class="news-content">
                         <span class="news-date">${news.date || ''}</span>
                         <h3 class="news-article-title">${news.title || ''}</h3>
-                        <a href="#${news.title ? news.title.toLowerCase().replace(/\s+/g, '-') : ''}" class="news-link">${news.linkText || 'Learn more'}</a>
+                        <a href="news-detail.html?id=${newsId}" class="news-link" onclick="event.stopPropagation();">${news.linkText || 'Read more'}</a>
                     </div>
                 `;
                 newsGrid.appendChild(newsCard);
