@@ -43,13 +43,12 @@ class HeroSlider {
 
     async loadSlides() {
         try {
-            // Use local images from public/slides folder
-            // URL encode spaces and special characters
+            // Use local images from public/images folder with clean filenames
             this.slides = [
-                { id: 1, imageUrl: 'public/slides/s1%20(1).jpg', order: 1 },
-                { id: 2, imageUrl: 'public/slides/s1%20(2).jpg', order: 2 },
-                { id: 3, imageUrl: 'public/slides/s1%20(3).jpg', order: 3 },
-                { id: 4, imageUrl: 'public/slides/s1%20(1).webp', order: 4 }
+                { id: 1, imageUrl: 'public/images/slide1.jpg', order: 1 },
+                { id: 2, imageUrl: 'public/images/slide2.jpg', order: 2 },
+                { id: 3, imageUrl: 'public/images/slide3.jpg', order: 3 },
+                { id: 4, imageUrl: 'public/images/slide4.webp', order: 4 }
             ];
 
             console.log('Loaded hero slides:', this.slides.length);
