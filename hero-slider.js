@@ -32,7 +32,6 @@ class HeroSlider {
     async init() {
         try {
             await this.loadSlides();
-            await this.loadSettings();
             this.renderSlides();
             if (this.settings.enabled !== false) {
                 this.startSlider();
@@ -44,40 +43,32 @@ class HeroSlider {
 
     async loadSlides() {
         try {
-            const slidesSnapshot = await getDocs(collection(db, 'heroSlides'));
-            this.slides = [];
-            
-            slidesSnapshot.forEach(doc => {
-                const slideData = doc.data();
-                this.slides.push({
-                    id: doc.id,
-                    ...slideData
-                });
-            });
+            // Use local images from public/slides folder
+            // URL encode spaces and special characters
+            this.slides = [
+                { id: 1, imageUrl: 'public/slides/s1%20(1).jpg', order: 1 },
+                { id: 2, imageUrl: 'public/slides/s1%20(2).jpg', order: 2 },
+                { id: 3, imageUrl: 'public/slides/s1%20(3).jpg', order: 3 },
+                { id: 4, imageUrl: 'public/slides/s1%20(1).webp', order: 4 }
+            ];
 
-            // Sort slides by order if specified
-            this.slides.sort((a, b) => (a.order || 0) - (b.order || 0));
-
-        console.log('Loaded hero slides:', this.slides.length);
-    } catch (error) {
-        console.error('Error loading hero slides:', error);
+            console.log('Loaded hero slides:', this.slides.length);
+        } catch (error) {
+            console.error('Error loading hero slides:', error);
+        }
     }
-}
 
 async loadSettings() {
-    try {
-        const settingsDoc = await getDoc(doc(db, 'content', 'sliderSettings'));
-        if (settingsDoc.exists()) {
-            this.settings = settingsDoc.data();
-            this.slideDuration = (this.settings.duration || 5) * 1000; // Convert to milliseconds
-        }
-    } catch (error) {
-        console.error('Error loading slider settings:', error);
-    }
+    // Settings are now hardcoded for local images
+    this.settings = { enabled: true, duration: 5 };
+    this.slideDuration = 5000; // 5 seconds in milliseconds
 }
 
     renderSlides() {
-        if (!this.sliderContainer) return;
+        if (!this.sliderContainer) {
+            console.error('Slider container not found!');
+            return;
+        }
 
         // Clear existing slides
         this.sliderContainer.innerHTML = '';
@@ -93,6 +84,8 @@ async loadSettings() {
             slideElement.className = 'hero-slide';
             slideElement.style.backgroundImage = `url('${slide.imageUrl}')`;
             
+            console.log(`Loading slide ${index + 1}: ${slide.imageUrl}`);
+            
             if (index === 0) {
                 slideElement.classList.add('active');
             }
@@ -100,7 +93,8 @@ async loadSettings() {
             this.sliderContainer.appendChild(slideElement);
         });
 
-        console.log(`Rendered ${this.slides.length} hero slides`);
+        console.log(`✓ Successfully rendered ${this.slides.length} hero slides`);
+        console.log('✓ Slider will change every 5 seconds');
     }
 
     startSlider() {
@@ -179,7 +173,7 @@ async loadSettings() {
     async refreshSlides() {
         this.stopSlider();
         await this.loadSlides();
-        await this.loadSettings();
+        this.loadSettings();
         this.renderSlides();
         this.currentSlideIndex = 0;
         if (this.settings.enabled !== false) {

@@ -2206,6 +2206,7 @@ async function loadHeroSlides() {
         // Sort slides by order
         heroSlides.sort((a, b) => (a.order || 0) - (b.order || 0));
         
+        console.log('Admin: Loaded hero slides:', heroSlides.length, heroSlides);
         renderHeroSlidesList();
     } catch (error) {
         console.error('Error loading hero slides:', error);
@@ -2297,11 +2298,14 @@ function updateSliderPreview() {
         previewInterval = null;
     }
     
+    console.log('Updating preview with slides:', heroSlides.length);
+    
     if (heroSlides.length === 0) {
         preview.innerHTML = `
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #999;">
-                <p>No slides to preview</p>
-                <small>Add slides below to see the preview</small>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #999; padding: 20px;">
+                <p style="margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">No slides to preview</p>
+                <small style="display: block; margin-bottom: 15px;">Add slides below to see the preview</small>
+                <button onclick="addHeroSlide()" class="btn" style="margin-top: 10px;">Add Your First Slide</button>
             </div>
         `;
         return;
@@ -2309,6 +2313,19 @@ function updateSliderPreview() {
     
     // Clear and set up preview
     preview.innerHTML = '';
+    preview.style.background = '#000';
+    
+    // Check if slides have images
+    const slidesWithImages = heroSlides.filter(s => s.imageUrl);
+    if (slidesWithImages.length === 0) {
+        preview.innerHTML = `
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #fff; padding: 20px;">
+                <p style="margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">⚠️ No images uploaded yet</p>
+                <small style="display: block;">Upload images to your slides below</small>
+            </div>
+        `;
+        return;
+    }
     
     // Create slide elements for preview
     const previewSlides = heroSlides.map((slide, index) => {
@@ -2325,6 +2342,25 @@ function updateSliderPreview() {
             opacity: ${index === 0 ? '1' : '0'};
             transition: opacity 1s ease-in-out;
         `;
+        
+        // Add overlay with slide info
+        if (slide.title) {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: absolute;
+                bottom: 40px;
+                left: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 14px;
+                max-width: 80%;
+            `;
+            overlay.textContent = slide.title;
+            slideEl.appendChild(overlay);
+        }
+        
         preview.appendChild(slideEl);
         return slideEl;
     });
@@ -2344,6 +2380,22 @@ function updateSliderPreview() {
     `;
     counter.textContent = `1 / ${heroSlides.length}`;
     preview.appendChild(counter);
+    
+    // Add status indicator
+    const status = document.createElement('div');
+    status.style.cssText = `
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(76, 175, 80, 0.9);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 11px;
+        z-index: 10;
+    `;
+    status.textContent = '● LIVE PREVIEW';
+    preview.appendChild(status);
     
     // Start preview slider if more than 1 slide
     if (heroSlides.length > 1) {
