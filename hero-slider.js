@@ -43,15 +43,15 @@ class HeroSlider {
 
     async loadSlides() {
         try {
-            // Use local images from public/images folder with clean filenames
+            // Use Cloudinary CDN URLs for optimized image delivery
             this.slides = [
-                { id: 1, imageUrl: 'public/images/slide1.jpg', order: 1 },
-                { id: 2, imageUrl: 'public/images/slide2.jpg', order: 2 },
-                { id: 3, imageUrl: 'public/images/slide3.jpg', order: 3 },
-                { id: 4, imageUrl: 'public/images/slide4.webp', order: 4 }
+                { id: 1, imageUrl: 'https://res.cloudinary.com/dhfg3suis/image/upload/v1761274585/slide1_aerdtw.jpg', order: 1 },
+                { id: 2, imageUrl: 'https://res.cloudinary.com/dhfg3suis/image/upload/v1761274585/slide2_gstlc4.jpg', order: 2 },
+                { id: 3, imageUrl: 'https://res.cloudinary.com/dhfg3suis/image/upload/v1761274586/slide3_wv3kaz.jpg', order: 3 },
+                { id: 4, imageUrl: 'https://res.cloudinary.com/dhfg3suis/image/upload/v1761274586/slide4_erbgp4.webp', order: 4 }
             ];
 
-            console.log('Loaded hero slides:', this.slides.length);
+            console.log('Loaded hero slides from Cloudinary:', this.slides.length);
         } catch (error) {
             console.error('Error loading hero slides:', error);
         }
