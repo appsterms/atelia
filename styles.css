@@ -52,7 +52,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #FFFFFF;
+    background-color: #e4e1d5;
     z-index: -2;
 }
 
@@ -178,35 +178,17 @@ body::before {
     left: 0;
     right: 0;
     z-index: 1000;
-    background: #0c3b2e;
-    backdrop-filter: blur(20px);
-    padding: 22px 0;
+    background: transparent;
+    backdrop-filter: none;
+    padding: 35px 0;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.header.scrolled {
+    background: rgba(250, 248, 245, 0.98);
+    backdrop-filter: blur(20px);
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05);
-}
-
-.header .logo h1,
-.header .logo-tagline {
-    color: #FFFFFF;
-}
-
-.header .navigation a {
-    color: #FFFFFF;
-}
-
-.header .navigation a::after {
-    background-color: #FFFFFF;
-}
-
-.header .book-here-btn {
-    background-color: #000000;
-    color: #FFFFFF;
-    border-color: #000000;
-}
-
-.header .phone-number {
-    color: #FFFFFF;
-    border-color: #FFFFFF;
+    padding: 22px 0;
 }
 
 .header-container {
@@ -230,18 +212,6 @@ body::before {
     color: #1a1a1a;
     letter-spacing: -1.5px;
     transition: all 0.3s ease;
-    margin-bottom: 4px;
-}
-
-.logo-tagline {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    color: #666;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin: 0;
-    line-height: 1;
 }
 
 .logo:hover h1 {
@@ -365,39 +335,26 @@ body::before {
 }
 
 .hero-content {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.05);
     padding: 80px 60px;
-    border-radius: 12px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0;
+    backdrop-filter: blur(2px);
 }
 
 .hero-headline {
     font-family: 'Playfair Display', serif;
     font-size: 56px;
     font-weight: 400;
-    color: #0c3b2e;
+    color: #e4e1d5;
     line-height: 1.1;
-    margin-bottom: 20px;
-    text-shadow: none;
+    margin-bottom: 50px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     letter-spacing: -0.8px;
 }
 
-.hero-tagline {
-    font-family: 'Inter', sans-serif;
-    font-size: 18px;
-    font-weight: 500;
-    color: #0c3b2e;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 40px;
-    opacity: 0.8;
-}
-
 .discovery-call-btn {
-    background-color: #0C3B2E;
-    color: #FFFFFF;
+    background-color: #e4e1d5;
+    color: #3A3A3A;
     border: none;
     padding: 20px 50px;
     border-radius: 50px;
@@ -407,19 +364,19 @@ body::before {
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(12, 59, 46, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     font-family: 'Inter', sans-serif;
 }
 
 .discovery-call-btn:hover {
-    background-color: #0A2F25;
+    background-color: #d4d1c5;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(12, 59, 46, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Projects Section Styles */
 .projects-section {
-    background-color: #0C3B2E;
+    background-color: #e4e1d5;
     padding: 100px 0;
 }
 
@@ -439,7 +396,7 @@ body::before {
     font-family: 'Playfair Display', serif;
     font-size: 52px;
     font-weight: 400;
-    color: #FFFFFF;
+    color: #3A3A3A;
     margin: 0;
     letter-spacing: -0.5px;
 }
@@ -452,7 +409,7 @@ body::before {
 .projects-description p {
     font-family: 'Inter', sans-serif;
     font-size: 15px;
-    color: #FFFFFF;
+    color: #3A3A3A;
     line-height: 1.6;
     margin-bottom: 20px;
 }
@@ -460,7 +417,7 @@ body::before {
 .view-projects-link {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
-    color: #FFFFFF;
+    color: #3A3A3A;
     text-decoration: none;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -468,7 +425,7 @@ body::before {
 }
 
 .view-projects-link:hover {
-    color: #D9E6E0;
+    color: #666;
 }
 
 .projects-grid {
@@ -536,8 +493,7 @@ body::before {
 
 /* Testimonials Section Styles */
 .testimonials-section {
-    display: none;
-    background-color: #0C3B2E;
+    background-color: #d2cdb8;
     padding: 100px 0;
 }
 
@@ -561,7 +517,7 @@ body::before {
     font-family: 'Playfair Display', serif;
     font-size: 40px;
     font-weight: 400;
-    color: #FFFFFF;
+    color: #3A3A3A;
     margin-bottom: 30px;
     line-height: 1.2;
     letter-spacing: -0.5px;
@@ -570,7 +526,7 @@ body::before {
 .testimonials-description {
     font-family: 'Inter', sans-serif;
     font-size: 15px;
-    color: #FFFFFF;
+    color: #3A3A3A;
     line-height: 1.7;
     margin-bottom: 30px;
 }
@@ -578,7 +534,7 @@ body::before {
 .view-testimonials-link {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
-    color: #FFFFFF;
+    color: #3A3A3A;
     text-decoration: none;
     font-weight: 500;
     letter-spacing: 0.5px;
@@ -586,7 +542,7 @@ body::before {
 }
 
 .view-testimonials-link:hover {
-    color: #D9E6E0;
+    color: #666;
 }
 
 .testimonials-video {
@@ -614,7 +570,7 @@ body::before {
 
 /* About Section Styles */
 .about-section {
-    background-color: #F9F9F9;
+    background-color: #e4e1d5;
     padding: 100px 0;
 }
 
@@ -680,7 +636,7 @@ body::before {
 
 /* Services Section Styles */
 .services-section {
-    background-color: #0C3B2E;
+    background-color: #d2cdb8;
     padding: 100px 0;
 }
 
@@ -700,7 +656,7 @@ body::before {
     font-family: 'Playfair Display', serif;
     font-size: 52px;
     font-weight: 400;
-    color: #FFFFFF;
+    color: #3A3A3A;
     margin: 0;
     letter-spacing: -0.5px;
 }
@@ -708,7 +664,7 @@ body::before {
 .services-tagline {
     font-family: 'Inter', sans-serif;
     font-size: 15px;
-    color: #FFFFFF;
+    color: #3A3A3A;
     margin: 0;
     font-weight: 400;
 }
@@ -735,14 +691,6 @@ body::before {
     min-width: 350px;
     scroll-snap-align: start;
     text-align: center;
-    background-color: #e4e1d5;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-}
-
-.service-card:hover {
-    transform: translateY(-5px);
 }
 
 @media (max-width: 768px) {
@@ -807,8 +755,8 @@ body::before {
 
 .explore-services-btn {
     background-color: transparent;
-    color: #FFFFFF;
-    border: 2px solid #FFFFFF;
+    color: #3A3A3A;
+    border: 2px solid #3A3A3A;
     padding: 15px 40px;
     border-radius: 50px;
     font-size: 15px;
@@ -820,14 +768,14 @@ body::before {
 }
 
 .explore-services-btn:hover {
-    background-color: #FFFFFF;
-    color: #0C3B2E;
+    background-color: #3A3A3A;
+    color: #FFFFFF;
     transform: translateY(-2px);
 }
 
 /* How it Works Section Styles */
 .how-it-works-section {
-    background-color: #F9F9F9;
+    background-color: #e4e1d5;
     padding: 100px 0;
 }
 
@@ -901,7 +849,7 @@ body::before {
 }
 
 .book-discovery-btn {
-    background-color: #0C3B2E;
+    background-color: #4A9B3A;
     color: #FFFFFF;
     border: none;
     padding: 18px 40px;
@@ -912,19 +860,18 @@ body::before {
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(12, 59, 46, 0.3);
     font-family: 'Inter', sans-serif;
 }
 
 .book-discovery-btn:hover {
-    background-color: #0A2F25;
+    background-color: #3A7B2A;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(12, 59, 46, 0.4);
+    box-shadow: 0 6px 20px rgba(74, 155, 58, 0.3);
 }
 
 /* News Section Styles */
 .news-section {
-    background-color: #0C3B2E;
+    background-color: #d2cdb8;
     padding: 100px 0;
 }
 
@@ -944,7 +891,7 @@ body::before {
     font-family: 'Playfair Display', serif;
     font-size: 52px;
     font-weight: 400;
-    color: #FFFFFF;
+    color: #3A3A3A;
     margin: 0;
     letter-spacing: -0.5px;
 }
@@ -952,7 +899,7 @@ body::before {
 .news-tagline {
     font-family: 'Inter', sans-serif;
     font-size: 15px;
-    color: #FFFFFF;
+    color: #3A3A3A;
     margin: 0;
     font-weight: 400;
     max-width: 400px;
@@ -1089,8 +1036,8 @@ body::before {
 
 .explore-news-btn {
     background-color: transparent;
-    color: #FFFFFF;
-    border: 2px solid #FFFFFF;
+    color: #3A3A3A;
+    border: 2px solid #3A3A3A;
     padding: 15px 40px;
     border-radius: 50px;
     font-size: 15px;
@@ -1102,8 +1049,8 @@ body::before {
 }
 
 .explore-news-btn:hover {
-    background-color: #FFFFFF;
-    color: #0C3B2E;
+    background-color: #3A3A3A;
+    color: #FFFFFF;
     transform: translateY(-2px);
 }
 
@@ -1119,37 +1066,32 @@ body::before {
 
 .cta-content {
     text-align: center;
-    padding: 80px 60px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0 60px;
 }
 
 .cta-headline {
     font-family: 'Playfair Display', serif;
     font-size: 56px;
     font-weight: 400;
-    color: #0c3b2e;
+    color: #e4e1d5;
     line-height: 1.1;
     margin-bottom: 30px;
-    text-shadow: none;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     letter-spacing: -0.8px;
 }
 
 .cta-description {
     font-family: 'Inter', sans-serif;
     font-size: 17px;
-    color: #0c3b2e;
+    color: #e4e1d5;
     line-height: 1.6;
     margin-bottom: 40px;
-    text-shadow: none;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .cta-button {
-    background-color: #0C3B2E;
-    color: #FFFFFF;
+    background-color: #e4e1d5;
+    color: #3A3A3A;
     border: none;
     padding: 18px 40px;
     border-radius: 50px;
@@ -1159,14 +1101,14 @@ body::before {
     text-transform: lowercase;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(12, 59, 46, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     font-family: 'Inter', sans-serif;
 }
 
 .cta-button:hover {
-    background-color: #0A2F25;
+    background-color: #d4d1c5;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(12, 59, 46, 0.4);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 /* Booking Modal Styles */
@@ -1329,7 +1271,7 @@ body::before {
 
 /* Footer Styles */
 .footer {
-    background-color: #0C3B2E;
+    background-color: #3A3A3A;
     color: #FFFFFF;
     padding: 80px 0 30px;
 }
